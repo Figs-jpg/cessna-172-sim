@@ -72,7 +72,6 @@ document.getElementById('app').innerHTML = `
             Mixture — full rich<br>Switches — lights, carb heat, pumps</td></tr>
       <tr><td><b>Mag check</b><br><span style="color:var(--dim)">1,700 RPM</span></td>
           <td>150 max drop<br>50 max diff</td></tr>
-      <tr><td><b>Vacuum</b></td><td>4.8 – 5.2 in&nbsp;Hg</td></tr>
       <tr><td><b>CHT limit</b></td><td>400° climb / 370° cruise</td></tr>
       <tr><td><b>Fuel</b></td><td>Swap tanks q.30 min<br>Single tank &gt; 5,000′</td></tr>
     </table>

@@ -107,8 +107,7 @@ const FLOWS = [
   ['THROTTLE','1,700 RPM', s=>near(s.rpm,1700,90),'throttle'],
   ['MIXTURE',"LEAN (>3,000' MSL)"],
   ['MAG CHECK','150 MAX / 50 DIFF', s=>s.magSeenL&&s.magSeenR&&s.mags==='BOTH','mags'],
-  // No suction gauge fitted on the panel, so this is a spoken call, not a read.
-  ['VACUUM GAUGE','CK (4.8–5.2)'],
+  // The card's VACUUM GAUGE check is dropped: no suction gauge is fitted.
   ["ENGINE T's & P's",'CK', s=>s.oilP>=60&&s.oilT>=100],
   ['CARB HEAT','ON', s=>s.carb,'carbheat'],
   ['THROTTLE','IDLE', s=>s.throttle<0.06,'throttle'],
