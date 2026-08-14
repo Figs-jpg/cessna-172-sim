@@ -1,0 +1,15 @@
+# Source reference material — ~25 MB of cockpit photographs and the original
+# checklist card. The panel was measured from these, but the site does not load
+# them at runtime, so they stay out of the repo to keep it small.
+# Delete these lines if you want them versioned too.
+*.jpg
+*.jpeg
+*.png
+*.docx
+Images - 01/
+
+# OS / editor noise
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
