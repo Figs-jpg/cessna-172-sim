@@ -1,7 +1,11 @@
 # Cessna 172 SIM
 
+### ▶ [Launch the sim](https://figs-jpg.github.io/cessna-172-sim/)
+
 An interactive Cessna 172K instrument panel and flows checklist trainer, built
 for practising cockpit flows away from the aircraft.
+
+Runs in any browser — nothing to install, works on a phone or tablet.
 
 Modelled on **N46519** — a 172K with a Garmin retrofit (dual G5s, GMA 340,
 GNS 430) and a JPI EDM engine monitor. Panel positions were measured from
