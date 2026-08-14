@@ -201,4 +201,5 @@ function frame(now){
   requestAnimationFrame(frame);
 }
 phaseSel.value=0; UI.phase=0; resetFlow();
-requestAnimationFrame(frame);
+render();                      // paint once up front, so the first view never
+requestAnimationFrame(frame);  // depends on the animation loop having started
