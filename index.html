@@ -5,25 +5,30 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cessna 172 SIM</title>
 <meta name="description" content="Interactive Cessna 172K panel and flows checklist trainer.">
-<link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/app.css?v=3">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>&#9992;</text></svg>">
 </head>
 <body>
 
 <!-- Every pixel below is built in JS. Load order matters: helpers and state
      first, then the page chrome, then the panel that draws into it. Plain
-     scripts (not ES modules) so this still runs from a file:// double-click. -->
+     scripts (not ES modules) so this still runs from a file:// double-click.
+
+     The ?v= on each file is a cache buster. GitHub Pages serves JS and CSS
+     with a ~10 minute cache, so without it a freshly pushed change keeps
+     running the old code until that expires. BUMP THE NUMBER ON EVERY
+     DEPLOY -- it must match on all ten lines. -->
 <div id="app"></div>
 
-<script src="js/svg.js"></script>
-<script src="js/state.js"></script>
-<script src="js/flows.js"></script>
-<script src="js/layout.js"></script>
-<script src="js/panel.js"></script>
-<script src="js/physics.js"></script>
-<script src="js/controls.js"></script>
-<script src="js/render.js"></script>
-<script src="js/app.js"></script>
+<script src="js/svg.js?v=3"></script>
+<script src="js/state.js?v=3"></script>
+<script src="js/flows.js?v=3"></script>
+<script src="js/layout.js?v=3"></script>
+<script src="js/panel.js?v=3"></script>
+<script src="js/physics.js?v=3"></script>
+<script src="js/controls.js?v=3"></script>
+<script src="js/render.js?v=3"></script>
+<script src="js/app.js?v=3"></script>
 
 </body>
 </html>

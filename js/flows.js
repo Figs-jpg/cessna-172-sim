@@ -115,7 +115,9 @@ const FLOWS = [
   ['THROTTLE','1,000 RPM', s=>near(s.rpm,1000,140),'throttle'],
   ['FUEL SELECTOR','BOTH (SINGLE >5,000 FT)', s=>s.fuel==='BOTH','fuel'],
   ['FLAPS','SET A/R (10° SHORT/SOFT FIELD)', s=>s.flaps===0||s.flaps===10,'flaps'],
-  ['LIGHTS','SET A/R', s=>s.land&&s.strobe,'land'],
+  // "As required" — any departure light satisfies it. Demanding both LAND and
+  // STROBE meant flipping the highlighted switch did nothing.
+  ['LIGHTS','SET A/R', s=>s.land||s.strobe,'land'],
   ['SPOT','CHECK'],
   ['DEPARTURE BRIEF','REVIEW']
 ]},
