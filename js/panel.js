@@ -198,10 +198,10 @@ const mJMAP = mapper(10,32, 140,400), mJRPM = mapper(500,2800, 140,400);
   const [cx,cy]=SIX.aux;
   const x=cx-JPI.w/2, y=cy-JPI.h/2;
   const sx=x+8, sy=y+10, sw=156, sh=190;
-  const acx=sx+38, acy=sy+36;                          // MAP/RPM arc centre
-  const barX=sx+82, barW=50;                           // right-hand strip gauges
+  const acx=sx+40, acy=sy+42;                          // MAP/RPM arc centre
+  const barX=sx+84, barW=48;                           // right-hand strip gauges
   const colW=16, colPitch=28, col0=sx+28;              // cylinder columns
-  const base=sy+142, colMax=46;                        // bar baseline and travel
+  const base=sy+146, colMax=40;                        // bar baseline and travel
 
   // stash for render.js so the two files cannot drift apart
   JPI.barW=barW; JPI.base=base; JPI.colMax=colMax;
@@ -221,11 +221,11 @@ const mJMAP = mapper(10,32, 140,400), mJRPM = mapper(500,2800, 140,400);
   for(let i=0;i<4;i++){
     const bx=col0+i*colPitch;
     cols+=`
-      <text class="jtn" id="jpi_e${i}" x="${bx+colW/2}" y="${sy+80}" style="font-size:6.5px">----</text>
-      <text class="jtn" id="jpi_c${i}" x="${bx+colW/2}" y="${sy+89}" style="font-size:6.5px;fill:#8b98a5">---</text>
+      <text class="jtn" id="jpi_e${i}" x="${bx+colW/2}" y="${sy+92}" style="font-size:6.5px">----</text>
+      <text class="jtn" id="jpi_c${i}" x="${bx+colW/2}" y="${sy+101}" style="font-size:6.5px;fill:#8b98a5">---</text>
       <rect id="jpi_b${i}" x="${bx}" y="${base}" width="${colW}" height="0" fill="#3b82d9"/>
       <rect id="jpi_k${i}" x="${bx}" y="${base}" width="${colW}" height="3" fill="#4dd2ff"/>
-      <text class="jtn" x="${bx+colW/2}" y="${sy+152}" style="font-size:6.5px">${i+1}</text>`;
+      <text class="jtn" x="${bx+colW/2}" y="${sy+155}" style="font-size:6.5px">${i+1}</text>`;
   }
 
   svgParts.push(`
@@ -235,27 +235,27 @@ const mJMAP = mapper(10,32, 140,400), mJRPM = mapper(500,2800, 140,400);
    <clipPath id="jpiClip"><rect x="${sx}" y="${sy}" width="${sw}" height="${sh}"/></clipPath>
    <g clip-path="url(#jpiClip)">
      <!-- MAP outer arc, RPM inner arc -->
-     <path class="arcG" stroke-width="4" d="${arc(acx,acy,28,mJMAP(10),mJMAP(30))}"/>
-     <path class="arcR" stroke-width="4" d="${arc(acx,acy,28,mJMAP(30),mJMAP(32))}"/>
-     <path class="arcG" stroke-width="4" d="${arc(acx,acy,19,mJRPM(500),mJRPM(2700))}"/>
-     <path class="arcR" stroke-width="4" d="${arc(acx,acy,19,mJRPM(2700),mJRPM(2800))}"/>
+     <path class="arcG" stroke-width="4" d="${arc(acx,acy,33,mJMAP(10),mJMAP(30))}"/>
+     <path class="arcR" stroke-width="4" d="${arc(acx,acy,33,mJMAP(30),mJMAP(32))}"/>
+     <path class="arcG" stroke-width="4" d="${arc(acx,acy,24,mJRPM(500),mJRPM(2700))}"/>
+     <path class="arcR" stroke-width="4" d="${arc(acx,acy,24,mJRPM(2700),mJRPM(2800))}"/>
      <g id="jpi_mapptr" style="transform-origin:${acx}px ${acy}px">
-       <path d="M${acx} ${acy-34} l-3.5 6 h7 z" fill="#fff"/></g>
+       <path d="M${acx} ${acy-35} l-4 -5 h8 z" fill="#fff"/></g>
      <g id="jpi_rpmptr" style="transform-origin:${acx}px ${acy}px">
-       <path d="M${acx} ${acy-13} l-3.5 -6 h7 z" fill="#fff"/></g>
-     <text class="jt" x="${acx}" y="${acy-20}" style="text-anchor:middle;fill:#8b98a5">MAP</text>
-     <text class="jval" id="jpi_map" x="${acx}" y="${acy-7}" style="font-size:13px">--</text>
-     <text class="jval" id="jpi_rpm" x="${acx}" y="${acy+10}" style="font-size:13px">----</text>
-     <text class="jt" x="${acx}" y="${acy+21}" style="text-anchor:middle;fill:#8b98a5">RPM</text>
+       <path d="M${acx} ${acy-26} l-4 -5 h8 z" fill="#fff"/></g>
+     <text class="jt" x="${acx}" y="${acy-14}" style="text-anchor:middle;font-size:5px;fill:#8b98a5">MAP</text>
+     <text class="jval" id="jpi_map" x="${acx}" y="${acy-4}" style="font-size:10px">--</text>
+     <text class="jval" id="jpi_rpm" x="${acx}" y="${acy+8}" style="font-size:10px">----</text>
+     <text class="jt" x="${acx}" y="${acy+17}" style="text-anchor:middle;font-size:5px;fill:#8b98a5">RPM</text>
      ${bars}
      <rect x="${barX}" y="${sy+62}" width="${barW}" height="12" fill="#000" stroke="#39424b" stroke-width=".5"/>
      <text class="jt" id="jpi_hm" x="${barX+barW/2}" y="${sy+71}" style="text-anchor:middle;fill:#4dd2ff">--:--</text>
 
      <!-- per-cylinder EGT / CHT -->
      ${cols}
-     <text class="jtn" x="${sx+11}" y="${sy+98}" style="fill:#ff5f56">1650</text>
+     <text class="jtn" x="${sx+11}" y="${sy+110}" style="fill:#ff5f56">1650</text>
      <text class="jtn" x="${sx+11}" y="${base+2}" style="fill:#8b98a5">200</text>
-     <text class="jtn" x="${sx+145}" y="${sy+98}" style="fill:#ff5f56">500</text>
+     <text class="jtn" x="${sx+145}" y="${sy+110}" style="fill:#ff5f56">500</text>
      <text class="jtn" x="${sx+145}" y="${base+2}" style="fill:#8b98a5">°F</text>
 
      <!-- selected cylinder -->
