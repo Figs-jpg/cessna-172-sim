@@ -29,7 +29,11 @@ const COL = 128, ROW = 144;   // ROW must clear the G5 bezel plus its caption
 const LX = 150, LY = 200;
 const SIX = {
   asi :[LX,       LY],       adi :[LX+COL,   LY],
-  altm:[LX+COL*2, LY],       aux :[LX+COL*3, LY],       // unidentified rect
+  altm:[LX+COL*2, LY],
+  /* The JPI sits alone in the fourth column with nothing above or below
+     it, so it is drawn larger than scale to fill that space and stay
+     readable. Its own centre, not the six-pack grid. */
+  aux :[570, 266],
   tc  :[LX,       LY+ROW],   hsi :[LX+COL,   LY+ROW],
   vsi :[LX+COL*2, LY+ROW]
 };
@@ -179,7 +183,7 @@ const SP_STEP=10, SP_PX=11, AL_STEP=100, AL_PX=11;
    bars top-right, per-cylinder EGT/CHT columns in the middle, and the
    selected EGT/CHT digits along the foot. Four columns, not the six in the
    reference photo — the O-320 in a 172K has four cylinders. */
-const JPI = {w:112, h:150};
+const JPI = {w:172, h:240};   // geometry for render.js is stashed on this object
 const JPI_BARS = [
   {id:'ot',  label:'O-T', lo:60, hi:250, get:()=>S.oilT,          fmt:v=>Math.round(v)},
   {id:'op',  label:'O-P', lo:0,  hi:100, get:()=>S.oilP,          fmt:v=>Math.round(v)},
@@ -193,74 +197,82 @@ const mJMAP = mapper(10,32, 140,400), mJRPM = mapper(500,2800, 140,400);
 {
   const [cx,cy]=SIX.aux;
   const x=cx-JPI.w/2, y=cy-JPI.h/2;
-  const sx=x+5, sy=y+7, sw=102, sh=116;
-  const acx=sx+25, acy=sy+23;                    // arc centre
-  const base=sy+86, colW=10, colPitch=16, col0=sx+24;   // cylinder columns
+  const sx=x+8, sy=y+10, sw=156, sh=190;
+  const acx=sx+38, acy=sy+36;                          // MAP/RPM arc centre
+  const barX=sx+82, barW=50;                           // right-hand strip gauges
+  const colW=16, colPitch=28, col0=sx+28;              // cylinder columns
+  const base=sy+142, colMax=46;                        // bar baseline and travel
+
+  // stash for render.js so the two files cannot drift apart
+  JPI.barW=barW; JPI.base=base; JPI.colMax=colMax;
 
   let bars='';
   JPI_BARS.forEach((b,i)=>{
-    const by=sy+9+i*11, bx=sx+52, bw=26;
+    const by=sy+8+i*13;
     bars+=`
-      <rect x="${bx}" y="${by}" width="${bw}" height="4.5" fill="#1b2026" stroke="#39424b" stroke-width=".5"/>
-      <rect id="jpi_${b.id}bar" x="${bx}" y="${by}" width="0" height="4.5" fill="#35d07f"/>
-      <text class="jt" id="jpi_${b.id}" x="${bx-2}" y="${by+4.5}" style="text-anchor:end">--</text>
-      <text class="jt" x="${bx+bw+2}" y="${by+4.5}" style="text-anchor:start">${b.label}</text>`;
+      <rect x="${barX}" y="${by}" width="${barW}" height="7" fill="#1b2026" stroke="#39424b" stroke-width=".5"/>
+      <rect id="jpi_${b.id}bar" x="${barX}" y="${by}" width="0" height="7" fill="#35d07f"/>
+      <text class="jt" id="jpi_${b.id}" x="${barX-4}" y="${by+6.5}" style="text-anchor:end">--</text>
+      <text class="jt" x="${barX+barW+4}" y="${by+6.5}" style="text-anchor:start">${b.label}</text>`;
   });
 
-  /* Per-cylinder EGT/CHT figures are dropped: four four-digit numbers across
-     a 102px screen overprint each other and the column numbers. The bars
-     carry the per-cylinder picture; the selected values read at the foot. */
+  // At this size the per-cylinder figures fit again, as on the real unit.
   let cols='';
   for(let i=0;i<4;i++){
     const bx=col0+i*colPitch;
     cols+=`
+      <text class="jtn" id="jpi_e${i}" x="${bx+colW/2}" y="${sy+80}" style="font-size:6.5px">----</text>
+      <text class="jtn" id="jpi_c${i}" x="${bx+colW/2}" y="${sy+89}" style="font-size:6.5px;fill:#8b98a5">---</text>
       <rect id="jpi_b${i}" x="${bx}" y="${base}" width="${colW}" height="0" fill="#3b82d9"/>
-      <rect id="jpi_k${i}" x="${bx}" y="${base}" width="${colW}" height="2.5" fill="#4dd2ff"/>
-      <text class="jtn" x="${bx+colW/2}" y="${base+7}">${i+1}</text>`;
+      <rect id="jpi_k${i}" x="${bx}" y="${base}" width="${colW}" height="3" fill="#4dd2ff"/>
+      <text class="jtn" x="${bx+colW/2}" y="${sy+152}" style="font-size:6.5px">${i+1}</text>`;
   }
 
   svgParts.push(`
-   <rect class="bezel" x="${x-4}" y="${y-4}" width="${JPI.w+8}" height="${JPI.h+8}" rx="6"/>
-   <rect x="${x}" y="${y}" width="${JPI.w}" height="${JPI.h}" rx="4" fill="#16191c"/>
+   <rect class="bezel" x="${x-4}" y="${y-4}" width="${JPI.w+8}" height="${JPI.h+8}" rx="7"/>
+   <rect x="${x}" y="${y}" width="${JPI.w}" height="${JPI.h}" rx="5" fill="#16191c"/>
    <rect x="${sx}" y="${sy}" width="${sw}" height="${sh}" fill="#05070a"/>
    <clipPath id="jpiClip"><rect x="${sx}" y="${sy}" width="${sw}" height="${sh}"/></clipPath>
    <g clip-path="url(#jpiClip)">
-     <!-- MAP / RPM arc -->
-     <path class="arcG" stroke-width="2.5" d="${arc(acx,acy,18,mJMAP(10),mJMAP(30))}"/>
-     <path class="arcR" stroke-width="2.5" d="${arc(acx,acy,18,mJMAP(30),mJMAP(32))}"/>
-     <path class="arcG" stroke-width="2.5" d="${arc(acx,acy,12,mJRPM(500),mJRPM(2700))}"/>
-     <path class="arcR" stroke-width="2.5" d="${arc(acx,acy,12,mJRPM(2700),mJRPM(2800))}"/>
+     <!-- MAP outer arc, RPM inner arc -->
+     <path class="arcG" stroke-width="4" d="${arc(acx,acy,28,mJMAP(10),mJMAP(30))}"/>
+     <path class="arcR" stroke-width="4" d="${arc(acx,acy,28,mJMAP(30),mJMAP(32))}"/>
+     <path class="arcG" stroke-width="4" d="${arc(acx,acy,19,mJRPM(500),mJRPM(2700))}"/>
+     <path class="arcR" stroke-width="4" d="${arc(acx,acy,19,mJRPM(2700),mJRPM(2800))}"/>
      <g id="jpi_mapptr" style="transform-origin:${acx}px ${acy}px">
-       <path d="M${acx} ${acy-22} l-2.5 4 h5 z" fill="#fff"/></g>
+       <path d="M${acx} ${acy-34} l-3.5 6 h7 z" fill="#fff"/></g>
      <g id="jpi_rpmptr" style="transform-origin:${acx}px ${acy}px">
-       <path d="M${acx} ${acy-8} l-2.5 -4 h5 z" fill="#fff"/></g>
-     <text class="jt" x="${acx}" y="${acy-11}" style="text-anchor:middle;fill:#8b98a5">MAP</text>
-     <text class="jval" id="jpi_map" x="${acx}" y="${acy-2}">--</text>
-     <text class="jval" id="jpi_rpm" x="${acx}" y="${acy+10}">----</text>
-     <text class="jt" x="${acx}" y="${acy+18}" style="text-anchor:middle;fill:#8b98a5">RPM</text>
+       <path d="M${acx} ${acy-13} l-3.5 -6 h7 z" fill="#fff"/></g>
+     <text class="jt" x="${acx}" y="${acy-20}" style="text-anchor:middle;fill:#8b98a5">MAP</text>
+     <text class="jval" id="jpi_map" x="${acx}" y="${acy-7}" style="font-size:13px">--</text>
+     <text class="jval" id="jpi_rpm" x="${acx}" y="${acy+10}" style="font-size:13px">----</text>
+     <text class="jt" x="${acx}" y="${acy+21}" style="text-anchor:middle;fill:#8b98a5">RPM</text>
      ${bars}
-     <rect x="${sx+52}" y="${sy+53}" width="30" height="9" fill="#000" stroke="#39424b" stroke-width=".5"/>
-     <text class="jt" id="jpi_hm" x="${sx+67}" y="${sy+60}" style="text-anchor:middle;fill:#4dd2ff">--:--</text>
+     <rect x="${barX}" y="${sy+62}" width="${barW}" height="12" fill="#000" stroke="#39424b" stroke-width=".5"/>
+     <text class="jt" id="jpi_hm" x="${barX+barW/2}" y="${sy+71}" style="text-anchor:middle;fill:#4dd2ff">--:--</text>
 
      <!-- per-cylinder EGT / CHT -->
      ${cols}
-     <text class="jtn" x="${sx+6}" y="${sy+44}" style="fill:#ff5f56">1650</text>
-     <text class="jtn" x="${sx+6}" y="${base+2}" style="fill:#8b98a5">200</text>
+     <text class="jtn" x="${sx+11}" y="${sy+98}" style="fill:#ff5f56">1650</text>
+     <text class="jtn" x="${sx+11}" y="${base+2}" style="fill:#8b98a5">200</text>
+     <text class="jtn" x="${sx+145}" y="${sy+98}" style="fill:#ff5f56">500</text>
+     <text class="jtn" x="${sx+145}" y="${base+2}" style="fill:#8b98a5">°F</text>
 
-     <!-- selected values -->
-     <text class="jt" x="${sx+4}" y="${sy+113}" style="text-anchor:start;fill:#8b98a5">EGT</text>
-     <text class="jbig" id="jpi_egt" x="${sx+44}" y="${sy+114}" style="font-size:11px">----</text>
-     <text class="jt" x="${sx+52}" y="${sy+113}" style="text-anchor:start;fill:#8b98a5">CHT</text>
-     <text class="jbig" id="jpi_cht" x="${sx+98}" y="${sy+114}" style="font-size:11px">---</text>
+     <!-- selected cylinder -->
+     <text class="jt" x="${sx+5}" y="${sy+178}" style="text-anchor:start;fill:#8b98a5">EGT</text>
+     <text class="jbig" id="jpi_egt" x="${sx+74}" y="${sy+181}" style="font-size:18px">----</text>
+     <text class="jt" x="${sx+82}" y="${sy+178}" style="text-anchor:start;fill:#8b98a5">CHT</text>
+     <text class="jbig" id="jpi_cht" x="${sx+151}" y="${sy+181}" style="font-size:18px">---</text>
    </g>
-   <!-- bezel controls: lamp, round button, rocker, button -->
-   <circle cx="${x+10}" cy="${y+138}" r="2" fill="#5a1f1f"/>
-   <circle cx="${x+26}" cy="${y+138}" r="6" fill="#e6edf3" stroke="#0a0d10"/>
-   <rect x="${x+46}" y="${y+132}" width="20" height="12" rx="2" fill="#20262c" stroke="#0a0d10"/>
-   <rect x="${x+49}" y="${y+134}" width="14" height="5" rx="1" fill="#3a424b"/>
-   <circle cx="${x+86}" cy="${y+138}" r="3.5" fill="#20262c" stroke="#0a0d10"/>
-   <text class="iname" x="${cx}" y="${y+JPI.h+18}">JPI EDM</text>`);
+   <!-- bezel: lamp, round button, rocker, button -->
+   <circle cx="${x+16}" cy="${y+220}" r="3" fill="#5a1f1f"/>
+   <circle cx="${x+40}" cy="${y+220}" r="9" fill="#e6edf3" stroke="#0a0d10"/>
+   <rect x="${x+68}" y="${y+212}" width="30" height="17" rx="3" fill="#20262c" stroke="#0a0d10"/>
+   <rect x="${x+72}" y="${y+215}" width="22" height="7" rx="1.5" fill="#3a424b"/>
+   <circle cx="${x+134}" cy="${y+220}" r="5" fill="#20262c" stroke="#0a0d10"/>
+   <text class="iname" x="${cx}" y="${y+JPI.h+15}">JPI EDM  ENGINE MONITOR</text>`);
 }
+
 
 /* ---------- Turn coordinator ---------- */
 {

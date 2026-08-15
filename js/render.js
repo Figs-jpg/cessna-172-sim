@@ -65,12 +65,15 @@ function render(){
     const v=b.get();
     txt('jpi_'+b.id, S.running||b.id==='rem' ? b.fmt(v) : '--');
     const el=document.getElementById('jpi_'+b.id+'bar');
-    if(el) el.setAttribute('width', 26*Math.max(0,Math.min(1,(v-b.lo)/(b.hi-b.lo))));
+    if(el) el.setAttribute('width', JPI.barW*Math.max(0,Math.min(1,(v-b.lo)/(b.hi-b.lo))));
   }
   txt('jpi_hm', ff>0.2 ? (()=>{const t=rem/ff; return `${Math.floor(t)}:${String(Math.round((t%1)*60)).padStart(2,'0')}`;})() : '--:--');
-  const jbase = SIX.aux[1]-JPI.h/2+7+86, jmax = 42;
+  const jbase = JPI.base, jmax = JPI.colMax;   // geometry comes from panel.js
   for(let i=0;i<4;i++){
     const eg = S.running ? S.egt+CYL_EGT[i] : 0;
+    const ch = S.running ? S.cht+CYL_CHT[i] : 60;
+    txt('jpi_e'+i, S.running?Math.round(eg):'----');
+    txt('jpi_c'+i, S.running?Math.round(ch):'---');
     const frac=Math.max(0,Math.min(1,(eg-200)/(1650-200)));
     const bar=document.getElementById('jpi_b'+i), cap=document.getElementById('jpi_k'+i);
     if(bar){ bar.setAttribute('y', jbase-frac*jmax); bar.setAttribute('height', frac*jmax); }
