@@ -63,21 +63,24 @@ document.getElementById('app').innerHTML = `
   <section class="card">
     <h2>Memory Items</h2>
     <table class="v">
-      <tr><td><b>3 C's</b><br><span style="color:var(--dim)">Final verification on short final</span></td>
+      <tr><td><b>Engine failure</b><br><span style="color:var(--dim)">First three actions</span></td>
           <td style="text-align:left;color:var(--txt);font-family:inherit;font-weight:400">
-            Configured<br>Cleared to land<br>Runway clear</td></tr>
-      <tr><td><b>GUMS</b><br><span style="color:var(--dim)">Before landing</span></td>
+            Airspeed — 75 kts<br>Landing spot — locate<br>Air restart — accomplish</td></tr>
+      <tr><td><b>Air restart</b><br><span style="color:var(--dim)">Flow</span></td>
           <td style="text-align:left;color:var(--txt);font-family:inherit;font-weight:400">
-            Gas — fullest tank / BOTH<br>Undercarriage — down &amp; welded<br>
-            Mixture — full rich<br>Switches — lights, carb heat, pumps</td></tr>
-      <tr><td><b>Mag check</b><br><span style="color:var(--dim)">1,700 RPM</span></td>
-          <td>150 max drop<br>50 max diff</td></tr>
-      <tr><td><b>CHT limit</b></td><td>400° climb / 370° cruise</td></tr>
-      <tr><td><b>Fuel</b></td><td>Swap tanks q.30 min<br>Single tank &gt; 5,000′</td></tr>
+            Fuel selector — both<br>Mixture — full rich<br>Carb heat — on<br>
+            Master &amp; mags — check<br>Engine instruments — check</td></tr>
+      <tr><td><b>Engine fire in flight</b><br><span style="color:var(--dim)">Cut fuel first</span></td>
+          <td style="text-align:left;color:var(--txt);font-family:inherit;font-weight:400">
+            Mixture — idle cutoff<br>Fuel selector — off<br>Master — off<br>
+            Vents — close<br>Airspeed — increase</td></tr>
+      <tr><td><b>Distress</b></td><td>121.5<br>Squawk 7700</td></tr>
+      <tr><td><b>Ground fire start</b></td><td>Run @ 1,700 RPM<br>Throttle full open</td></tr>
+      <tr><td><b>Start</b></td><td>Throttle cracked 1/8″</td></tr>
     </table>
     <p class="note">
       This trainer is a study aid, not a certified reference. The aircraft POH and the
-      current RMC Aviation checklist card are always authoritative.
+      current checklist card are always authoritative.
     </p>
   </section>
 </main>
