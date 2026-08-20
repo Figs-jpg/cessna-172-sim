@@ -156,7 +156,8 @@ const SP_STEP=10, SP_PX=11, AL_STEP=100, AL_PX=11;
      <text class="g5c" id="g5a_baro" x="${sx+92}" y="${sy+87}">29.92</text>
    </g>
    <!-- yellow aircraft reference symbol -->
-   <path d="M${hcx-24} ${hcy} h11 l5 5 5 -5 h11" fill="none" stroke="#ffd21e" stroke-width="2"/>
+   <!-- 32px wide, so it starts at hcx-16 to sit centred on the horizon -->
+   <path d="M${hcx-16} ${hcy} h11 l5 5 5 -5 h11" fill="none" stroke="#ffd21e" stroke-width="2"/>
    <rect x="${hcx-1.6}" y="${hcy-2}" width="3.2" height="4" fill="#ffd21e"/>
    <!-- bezel controls -->
    <circle cx="${x+18}" cy="${y+110}" r="6" fill="#20262c" stroke="#0a0d10"/>
@@ -339,7 +340,8 @@ const mJMAP = mapper(10,32, 140,400), mJRPM = mapper(500,2800, 140,400);
      <circle cx="${rcx}" cy="${rcy}" r="14" fill="none" stroke="#4dd2ff" stroke-width=".7" stroke-dasharray="2 3"/>
 
      <!-- aircraft symbol -->
-     <path d="M${rcx} ${rcy-7} l2 5 v3 l8 4 v2.5 l-8 -2 v4 l3 2.5 v1.5 l-5 -1 l-5 1 v-1.5 l3 -2.5 v-4 l-8 2 v-2.5 l8 -4 v-3 z"
+     <!-- nose starts 10.3 above centre so the symbol straddles the rose centre -->
+     <path d="M${rcx} ${rcy-10.3} l2 5 v3 l8 4 v2.5 l-8 -2 v4 l3 2.5 v1.5 l-5 -1 l-5 1 v-1.5 l3 -2.5 v-4 l-8 2 v-2.5 l8 -4 v-3 z"
            fill="#fff"/>
 
      <!-- CRS and track -->
