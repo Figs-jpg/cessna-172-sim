@@ -37,6 +37,16 @@ When a check fails, work out whether the fault is the code or the test harness
 before changing anything. It has repeatedly been the harness, and saying so
 plainly is faster than quietly re-running.
 
+## Editing
+
+**Never put a backslash in a Bash heredoc.** The tool mangles them even inside
+`<<'PY'`, so a Python edit script matching on `'\n'` silently fails its
+assertion, or dies with "unexpected character after line continuation". Write
+the script to a file with the Write tool and run it. This has cost time twice.
+
+Edit scripts should `assert` on the expected match count before replacing, so a
+stale anchor fails loudly instead of writing nothing and reporting success.
+
 ## Invariants — do not undo these
 
 - **Input repaints itself.** Every control handler calls `render()`. `frame()`
