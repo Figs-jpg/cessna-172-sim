@@ -41,7 +41,8 @@ function build(){
   const P2 = add(P1, side, D);                // end of crosswind
   const P3 = add(P2, fwd, -(L+2*EXT));        // end of downwind
   const P4 = add(P3, side, -D);               // end of base = start of final
-  const ABEAM = add(A, side, D);              // abeam the numbers
+  const NUMS  = add(A, fwd, 42);              // where the numbers are painted
+  const ABEAM = add(NUMS, side, D);           // abeam THOSE, not the threshold
 
   // fit the whole circuit into the view
   const pts = [A,B,P1,P2,P3,P4,ABEAM];
@@ -50,6 +51,7 @@ function build(){
   const ox = VW/2 - cx, oy = VH/2 - cy + 10;
   const T = p => [f(p[0]+ox), f(p[1]+oy)];
   const [a,b,p1,p2,p3,p4,ab] = [A,B,P1,P2,P3,P4,ABEAM].map(T);
+  const nums = T(NUMS);
 
   const perp = [-fwd[1], fwd[0]];             // across the runway
   const corner = (base,s) => T(add(base, perp, s));
@@ -111,7 +113,7 @@ function build(){
 
   // ---- abeam marker ----
   out.push(`<circle cx="${ab[0]}" cy="${ab[1]}" r="6" class="pat-abeam"/>`);
-  out.push(`<line x1="${a[0]}" y1="${a[1]}" x2="${ab[0]}" y2="${ab[1]}" class="pat-tie"/>`);
+  out.push(`<line x1="${nums[0]}" y1="${nums[1]}" x2="${ab[0]}" y2="${ab[1]}" class="pat-tie"/>`);
 
   // ---- leg labels ----
   const away = (v,k)=>[v[0]*k, v[1]*k];
