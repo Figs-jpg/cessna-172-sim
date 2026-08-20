@@ -111,9 +111,10 @@ function build(){
        Those legs pass their side explicitly. */
     const n = outDir || ((n0[0]*away[0]+n0[1]*away[1])>=0 ? n0 : [-n0[0],-n0[1]]);
     const x=p[0]+n[0]*dist, y=p[1]+n[1]*dist;
-    return `<g class="pat-lbl ${cls}" transform="translate(${f(x)},${f(y)}) rotate(${f(ang)})">
-      <text y="-5" class="pat-leg">${lines[0]}</text>
-      <text y="8" class="pat-sub">${lines[1]}</text></g>`;
+    const y0 = -5 - (lines.length-2)*6.5;             // keep the block centred
+    return `<g class="pat-lbl ${cls}" transform="translate(${f(x)},${f(y)}) rotate(${f(ang)})">`
+      + lines.map((t,i)=>`<text y="${f(y0+i*13)}" class="${i?'pat-sub':'pat-leg'}">${t}</text>`).join('')
+      + '</g>';
   };
 
   const out = [];
@@ -189,7 +190,8 @@ function build(){
   /* Label near the tail, marker near the join. The label block is not
      symmetric about its origin, so which way it leans flips with the
      normalised rotation - they need ~60px of separation for the worst case. */
-  out.push(label(lerp(jn, tl, 0.87), ENTRY_DIR, ['45° ENTRY', 'join the downwind'], 'pat-key', 24));
+  out.push(label(lerp(jn, tl, 0.87), ENTRY_DIR,
+    ['45° ENTRY', 'Level 1,000 ft AGL', 'before joining'], 'pat-key', 32));
 
   /* ---- radio call points ----
      Positions follow the flight: hold short, lined up, then each turn, then
@@ -198,7 +200,7 @@ function build(){
     taxi:      add(add(A, side, 48), fwd, -22),
     departing: add(A, fwd, 34),
     crosswind: P1,
-    entry45:   add(JOIN, ENTRY_DIR, -36),
+    entry45:   add(JOIN, ENTRY_DIR, -30),
     downwind:  mid(P2, P3),
     base:      P3,
     final:     P4,
