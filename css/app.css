@@ -190,6 +190,7 @@ svg#patternSvg{width:100%;height:auto;display:block;border-radius:8px}
 .pat-abeam{fill:none;stroke:#4dd2ff;stroke-width:2.5}
 .pat-tie{stroke:#4dd2ff;stroke-width:1.2;stroke-dasharray:4 5;opacity:.7}
 .pat-lead{stroke:#4dd2ff;stroke-width:1.2;opacity:.75}
+.pat-entry{stroke:#4dd2ff;stroke-width:2.5;stroke-dasharray:9 6;opacity:.85;fill:none}
 /* radio call points on the diagram */
 .pat-call{cursor:pointer}
 .pat-call circle{fill:#16302f;stroke:#4dd2ff;stroke-width:1.6}

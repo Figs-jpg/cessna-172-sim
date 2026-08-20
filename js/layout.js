@@ -110,7 +110,7 @@ document.getElementById('app').innerHTML = `
 <div id="topPattern" class="hide">
   <main class="patgrid">
     <section class="card" id="patCard">
-      <svg id="patternSvg" viewBox="0 0 1000 760" aria-label="Traffic pattern diagram"></svg>
+      <svg id="patternSvg" viewBox="0 0 1000 820" aria-label="Traffic pattern diagram"></svg>
     </section>
     <aside class="card">
       <h2>Pattern</h2>

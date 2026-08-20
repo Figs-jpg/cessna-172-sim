@@ -34,6 +34,8 @@ const PAT_CALLS = [
   {id:'taxi',      name:'Taxi',            say:(r,h)=>`taxiing to runway ${spoken(r)}`},
   {id:'departing', name:'Departing',       say:(r,h)=>`departing runway ${spoken(r)}, ${h} closed traffic`},
   {id:'crosswind', name:'Crosswind',       say:(r,h)=>`turning ${h} crosswind runway ${spoken(r)}`},
+  {id:'entry45',   name:'45° entry',        arriving:true,
+     say:(r,h)=>`on the forty-five, entering the ${h} downwind runway ${spoken(r)}`},
   {id:'downwind',  name:'Downwind',        say:(r,h)=>`midfield ${h} downwind runway ${spoken(r)}`},
   {id:'base',      name:'Base',            say:(r,h)=>`turning ${h} base runway ${spoken(r)}`},
   {id:'final',     name:'Final',           say:(r,h)=>`turning final runway ${spoken(r)}, full stop`},
@@ -46,7 +48,7 @@ const callText = c =>
 const SVG = document.getElementById('patternSvg');
 if(!SVG) return;
 
-const VW = 1000, VH = 760;
+const VW = 1000, VH = 820;
 const AXIS = 210;                          // runway 03/21 lies on 210°/030° magnetic
 const CTR  = [VW/2, VH/2 + 8];             // runway centre — fixed, never moves
 const L = 250, D = 200, EXT = 95, HW = 15; // runway length, pattern width, extension, half-width
@@ -174,6 +176,21 @@ function build(){
       <text y="-4" class="pat-leg">ABEAM THE NUMBERS</text>
       <text y="9" class="pat-sub">${PAT_LEGS[3].call}</text></g>`);
 
+  /* ---- 45-degree entry ----
+     Joins the downwind upwind of midfield, arriving from outside the circuit.
+     Track is 45 degrees off the downwind heading, so the inbound direction is
+     the downwind heading turned half a right angle toward the outboard side. */
+  const JOIN = add(P2, fwd, -66);                       // upwind end of the downwind
+  const ENTRY_DIR = [(-fwd[0]-side[0])/Math.SQRT2, (-fwd[1]-side[1])/Math.SQRT2];
+  const ENTRY_TAIL = add(JOIN, ENTRY_DIR, -118);
+  const jn = R(JOIN), tl = R(ENTRY_TAIL);
+  out.push(`<line class="pat-entry" x1="${tl[0]}" y1="${tl[1]}" x2="${jn[0]}" y2="${jn[1]}"/>`);
+  out.push(arrow(mid(ENTRY_TAIL, JOIN), ENTRY_DIR, 11));
+  /* Label near the tail, marker near the join. The label block is not
+     symmetric about its origin, so which way it leans flips with the
+     normalised rotation - they need ~60px of separation for the worst case. */
+  out.push(label(lerp(jn, tl, 0.87), ENTRY_DIR, ['45° ENTRY', 'join the downwind'], 'pat-key', 24));
+
   /* ---- radio call points ----
      Positions follow the flight: hold short, lined up, then each turn, then
      clear of the runway. Numbered so the order is readable at a glance. */
@@ -181,6 +198,7 @@ function build(){
     taxi:      add(add(A, side, 48), fwd, -22),
     departing: add(A, fwd, 34),
     crosswind: P1,
+    entry45:   add(JOIN, ENTRY_DIR, -36),
     downwind:  mid(P2, P3),
     base:      P3,
     final:     P4,
