@@ -78,13 +78,16 @@ function build(){
      the right way up; it may therefore read against the direction of flight,
      which is normal on a chart. */
   const lerp=(u,v,t)=>[u[0]+(v[0]-u[0])*t, u[1]+(v[1]-u[1])*t];
-  const label = (p, along, lines, cls='', dist=26, inward=false) => {
+  const label = (p, along, lines, cls='', dist=26, outDir=null) => {
     let ang = Math.atan2(along[1], along[0]) * 180/Math.PI;
     if(ang >  90) ang -= 180;
     if(ang <= -90) ang += 180;
     const n0=[-along[1],along[0]], away=[p[0]-CTR[0], p[1]-CTR[1]];
-    let n = (n0[0]*away[0]+n0[1]*away[1])>=0 ? n0 : [-n0[0],-n0[1]];
-    if(inward) n = [-n[0],-n[1]];
+    /* The away-from-centre test is degenerate when a leg points straight
+       out from the runway (upwind, final): the perpendicular is orthogonal
+       to `away`, the dot product is ~0, and the side comes out arbitrary.
+       Those legs pass their side explicitly. */
+    const n = outDir || ((n0[0]*away[0]+n0[1]*away[1])>=0 ? n0 : [-n0[0],-n0[1]]);
     const x=p[0]+n[0]*dist, y=p[1]+n[1]*dist;
     return `<g class="pat-lbl ${cls}" transform="translate(${f(x)},${f(y)}) rotate(${f(ang)})">
       <text y="-5" class="pat-leg">${lines[0]}</text>
@@ -132,15 +135,22 @@ function build(){
   // Upwind and final both lie on the runway centreline extended, so they are
   // held further out: their labels are longer than the short legs they belong
   // to and would otherwise overhang onto the tarmac.
-  out.push(label(mid(b_,p1),      fwd,       ['UPWIND',    PAT_LEGS[0].call], '', 44));
+  const outside = neg(side);          // away from the circuit, not into it
+  out.push(label(mid(b_,p1),      fwd,       ['UPWIND',    PAT_LEGS[0].call], '', 40, outside));
   out.push(label(mid(p1,p2),      side,      ['CROSSWIND', PAT_LEGS[1].call]));
   out.push(label(mid(p2,p3),      neg(fwd),  ['DOWNWIND',  PAT_LEGS[2].call]));
   out.push(label(mid(p3,p4),      neg(side), ['BASE',      PAT_LEGS[4].call]));
   // biased toward the threshold so it does not overhang into the base leg
-  out.push(label(lerp(p4,a,0.72), fwd,       ['FINAL',     PAT_LEGS[5].call], '', 44));
-  // along the downwind like DOWNWIND, but on the inboard side so the two do
-  // not collide. Running it along the tie would cross the downwind itself.
-  out.push(label(ab,              neg(fwd),  ['ABEAM THE NUMBERS', PAT_LEGS[3].call], 'pat-key', 26, true));
+  out.push(label(lerp(p4,a,0.72), fwd,       ['FINAL',     PAT_LEGS[5].call], '', 44, outside));
+
+  /* Abeam gets a callout rather than a leg label: upright, left-aligned, set
+     outside the circuit and joined to the marker by a leader. Exact placement
+     waits until after render, when its width can be measured. */
+  const q0 = add(ab, side, 62);
+  out.push(`<line id="abeamLead" class="pat-lead" x1="${ab[0]}" y1="${ab[1]}" x2="${f(q0[0])}" y2="${f(q0[1])}"/>`);
+  out.push(`<g id="abeamLbl" class="pat-lbl pat-key" transform="translate(${f(q0[0])},${f(q0[1])})">
+      <text y="-4" class="pat-leg">ABEAM THE NUMBERS</text>
+      <text y="9" class="pat-sub">${PAT_LEGS[3].call}</text></g>`);
 
   // ---- north arrow ----
   out.push(`<g transform="translate(74,${VH-90})">
@@ -155,6 +165,21 @@ function build(){
   out.push(`<text class="pat-title2" x="${VW-24}" y="66">${PAT.hand==='L'?'LEFT':'RIGHT'}-HAND TRAFFIC · ${String(h).padStart(3,'0')}°</text>`);
 
   SVG.innerHTML = out.join('\n');
+
+  /* Now it can be measured: keep the text left-aligned, but sit the whole box
+     on the far side of the marker when the circuit is mirrored so it never
+     doubles back across the pattern. */
+  const lbl = SVG.querySelector('#abeamLbl'), lead = SVG.querySelector('#abeamLead');
+  if(lbl && lead){
+    const w = lbl.getBBox().width;
+    let x = side[0] < 0 ? q0[0] - w - 12 : q0[0] + 12;
+    x = Math.max(10, Math.min(VW - w - 10, x));          // keep it in frame
+    const y = Math.max(26, Math.min(VH-30, q0[1]));
+    lbl.setAttribute('transform', 'translate(' + f(x) + ',' + f(y) + ')');
+    // leader meets whichever edge of the box faces the marker
+    lead.setAttribute('x2', f(ab[0] < x ? x - 5 : x + w + 5));
+    lead.setAttribute('y2', f(y));
+  }
 
   document.getElementById('patLegs').innerHTML = PAT_LEGS.map(r=>
     `<tr><td><b>${r.leg}</b></td><td style="text-align:left;color:var(--txt);font-family:inherit;font-weight:400">${r.call}</td></tr>`
