@@ -16,7 +16,7 @@ const PAT = { rwy: 21, hand: 'L' };        // active end, left/right traffic
 const PAT_LEGS = [
   {leg:'UPWIND',    call:'Climb 80 MPH'},
   {leg:'CROSSWIND', call:'Level, accelerate 90–100 MPH'},
-  {leg:'DOWNWIND',  call:'2,200 RPM · pattern altitude'},
+  {leg:'DOWNWIND',  call:'2,200 RPM · 1,000 ft AGL'},
   {leg:'ABEAM',     call:'1,700 RPM · carb heat ON · flap 10° · 80 MPH'},
   {leg:'BASE',      call:'1,500 RPM · flap 20°'},
   {leg:'FINAL',     call:'Flap 30° · 75/70 MPH'}

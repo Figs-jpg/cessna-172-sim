@@ -201,8 +201,6 @@ building.
 
 Open questions I have flagged and not resolved:
 
-- **Pattern altitude** is captioned as the standard 1,000 ft AGL. The real
-  field's figure is unknown.
 - **Runway 03/21, left-hand traffic** — confirmed. One runway; the selector
   offers its two ends. The tarmac is pinned in `pattern.js` (`AXIS`, `CTR`) and
   only the circuit moves, because it is the same physical runway either way.
