@@ -143,6 +143,48 @@ const FLOWS = [
   ['LIGHTS','AS REQUIRED']
 ]},
 
+/* ---- Cruise-phase detail ----------------------------------------------
+   The instructor's card jumps straight from After Takeoff to Before
+   Landing, so these three come from the earlier RMC Aviation card. Speeds
+   are in MPH, matching this aeroplane's ASI. */
+{id:'climb', name:'Climb',
+ scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:1,
+        running:true,rpm:2500,oilP:75,oilT:185,beacon:true,strobe:true,land:true,flaps:10,
+        airborne:true,ias:80,altFt:1800,vsi:700,hdg:270,pitch:8,xpdr:'ALT'},
+ items:[
+  ['AIRSPEED',"80 MPH (100 MPH EXTENDED CLIMB)", s=>near(s.ias,80,12)],
+  ['FLAPS','UP', s=>s.flaps===0,'flaps'],
+  ['ENGINE INSTRUMENTS','CK, 400° CHT MAX', s=>s.cht<400],
+  ['LIGHTS','A/R', s=>!s.land,'land'],
+  ['MIXTURE',"LEAN AS REQ >3,000' MSL", s=>s.altFt<3000||s.mixture<0.9,'mixture'],
+  ['FUEL',"SINGLE TANK >5,000' MSL", s=>s.altFt<5000||s.fuel==='LEFT'||s.fuel==='RIGHT','fuel']
+]},
+
+{id:'cruise', name:'Cruise',
+ scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:0.92,
+        running:true,rpm:2450,oilP:74,oilT:190,beacon:true,strobe:true,flaps:0,
+        airborne:true,ias:118,altFt:4500,vsi:0,hdg:270,pitch:1,xpdr:'ALT'},
+ items:[
+  ['POWER','SET (2,300–2,400 RPM)', s=>s.rpm>=2250&&s.rpm<=2450,'throttle'],
+  ['MIXTURE',"LEAN AS REQ >3,000' MSL", s=>s.mixture<0.85,'mixture'],
+  ['ENGINE INST','MONITOR, CHT MAX 370°', s=>s.cht<370],
+  ['FUEL','SWAP TANKS EVERY 30 MINS', s=>s.fuel!=='OFF','fuel']
+]},
+
+{id:'descent', name:'Descent / Approach',
+ scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'LEFT',mixture:0.7,throttle:0.9,
+        running:true,rpm:2400,oilP:73,oilT:190,beacon:true,strobe:true,flaps:0,
+        airborne:true,ias:120,altFt:5500,vsi:0,hdg:270,pitch:0,xpdr:'ALT'},
+ items:[
+  ['THROTTLE','2,000 RPM', s=>near(s.rpm,2000,140),'throttle'],
+  ['ENGINE','MONITOR CHT COOLING', s=>s.cht<370],
+  ['FUEL',"BOTH THRU 5,000' MSL", s=>s.fuel==='BOTH','fuel'],
+  ['MIXTURE','RICHEN A/R', s=>s.mixture>0.85,'mixture'],
+  ['LIGHTS','AS REQ', s=>s.land,'land'],
+  ['ALTIMETER','SET'],
+  ['APPROACH BRIEF','COMPLETE']
+]},
+
 {id:'before-landing', name:'Before Landing',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'LEFT',mixture:0.7,throttle:0.4,
         running:true,rpm:1800,oilP:70,oilT:186,beacon:true,strobe:true,flaps:0,
