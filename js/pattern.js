@@ -72,18 +72,23 @@ function build(){
           r=add(add(p,dir,-size*0.5), n,-size*0.55);
     return `<path d="M${f(t[0])} ${f(t[1])} L${f(l[0])} ${f(l[1])} L${f(r[0])} ${f(r[1])} Z" class="pat-arrow"/>`;
   };
-  /* Push a label perpendicular to its own leg, on the side facing away from
-     the runway, and anchor it by the edge nearest the leg so the text grows
-     outward instead of straddling the line. Centred labels on a diagonal leg
-     always cross it, however far out you move them. */
-  const label = (p, dir, lines, cls='', dist=40) => {
-    const n0=[-dir[1],dir[0]], away=[p[0]-CTR[0], p[1]-CTR[1]];
-    const n = (n0[0]*away[0]+n0[1]*away[1])>=0 ? n0 : [-n0[0],-n0[1]];
-    const anchor = n[0]>0.35 ? 'start' : n[0]<-0.35 ? 'end' : 'middle';
-    const lift = n[1]>0.35 ? 10 : n[1]<-0.35 ? -22 : -6;   // clear the leg vertically too
-    const x=p[0]+n[0]*dist, y=p[1]+n[1]*dist+lift;
-    return `<g class="pat-lbl ${cls}" text-anchor="${anchor}" transform="translate(${f(x)},${f(y)})">` +
-      lines.map((t,i)=>`<text y="${i*13}" class="${i?'pat-sub':'pat-leg'}">${t}</text>`).join('') + '</g>';
+  /* Labels run ALONG their leg, sitting just off it — so which leg a call
+     belongs to is unmistakable, and a rotated label no longer has to be held
+     far away to avoid crossing the line. Rotation is normalised to keep text
+     the right way up; it may therefore read against the direction of flight,
+     which is normal on a chart. */
+  const lerp=(u,v,t)=>[u[0]+(v[0]-u[0])*t, u[1]+(v[1]-u[1])*t];
+  const label = (p, along, lines, cls='', dist=26, inward=false) => {
+    let ang = Math.atan2(along[1], along[0]) * 180/Math.PI;
+    if(ang >  90) ang -= 180;
+    if(ang <= -90) ang += 180;
+    const n0=[-along[1],along[0]], away=[p[0]-CTR[0], p[1]-CTR[1]];
+    let n = (n0[0]*away[0]+n0[1]*away[1])>=0 ? n0 : [-n0[0],-n0[1]];
+    if(inward) n = [-n[0],-n[1]];
+    const x=p[0]+n[0]*dist, y=p[1]+n[1]*dist;
+    return `<g class="pat-lbl ${cls}" transform="translate(${f(x)},${f(y)}) rotate(${f(ang)})">
+      <text y="-5" class="pat-leg">${lines[0]}</text>
+      <text y="8" class="pat-sub">${lines[1]}</text></g>`;
   };
 
   const out = [];
@@ -124,13 +129,18 @@ function build(){
   out.push(`<circle cx="${ab[0]}" cy="${ab[1]}" r="6" class="pat-abeam"/>`);
 
   // ---- leg labels: each pushed clear of its own leg ----
-  // midpoint of the CLIMB-OUT, not of the whole leg, which lies over the tarmac
-  out.push(label(mid(b_,p1),   fwd,       ['UPWIND',    PAT_LEGS[0].call]));
-  out.push(label(mid(p1,p2),   side,      ['CROSSWIND', PAT_LEGS[1].call]));
-  out.push(label(mid(p2,p3),   neg(fwd),  ['DOWNWIND',  PAT_LEGS[2].call]));
-  out.push(label(mid(p3,p4),   neg(side), ['BASE',      PAT_LEGS[4].call]));
-  out.push(label(mid(p4,R(A)), fwd,       ['FINAL',     PAT_LEGS[5].call]));
-  out.push(label(ab,           neg(fwd),  ['ABEAM THE NUMBERS', PAT_LEGS[3].call], 'pat-key', 30));
+  // Upwind and final both lie on the runway centreline extended, so they are
+  // held further out: their labels are longer than the short legs they belong
+  // to and would otherwise overhang onto the tarmac.
+  out.push(label(mid(b_,p1),      fwd,       ['UPWIND',    PAT_LEGS[0].call], '', 44));
+  out.push(label(mid(p1,p2),      side,      ['CROSSWIND', PAT_LEGS[1].call]));
+  out.push(label(mid(p2,p3),      neg(fwd),  ['DOWNWIND',  PAT_LEGS[2].call]));
+  out.push(label(mid(p3,p4),      neg(side), ['BASE',      PAT_LEGS[4].call]));
+  // biased toward the threshold so it does not overhang into the base leg
+  out.push(label(lerp(p4,a,0.72), fwd,       ['FINAL',     PAT_LEGS[5].call], '', 44));
+  // along the downwind like DOWNWIND, but on the inboard side so the two do
+  // not collide. Running it along the tie would cross the downwind itself.
+  out.push(label(ab,              neg(fwd),  ['ABEAM THE NUMBERS', PAT_LEGS[3].call], 'pat-key', 26, true));
 
   // ---- north arrow ----
   out.push(`<g transform="translate(74,${VH-90})">
