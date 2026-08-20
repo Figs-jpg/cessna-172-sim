@@ -96,7 +96,8 @@ const FLOWS = [
   ['THROTTLE','CRACK 1/8 INCH', s=>s.throttle>0.05&&s.throttle<0.3,'throttle'],
   ['BRAKES','SET'],
   ['CRANK ENGINE','THEN 1,000 RPM', s=>s.running&&near(s.rpm,1000,180),'mags'],
-  ['OIL PRESSURE','GREEN — AMMETER CHARGING', s=>s.oilP>=60&&s.amps>3],
+  ['OIL PRESSURE','GREEN', s=>s.oilP>=60],
+  ['AMMETER','CHARGING', s=>s.amps>3],
   ['AVIONICS MASTER','ON', s=>s.avionics,'avionics'],
   ['LIGHTS','TAXI LIGHTS ON', s=>s.land,'land']
 ]},
