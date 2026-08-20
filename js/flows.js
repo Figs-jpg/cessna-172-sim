@@ -172,7 +172,7 @@ const FLOWS = [
 {id:'after-takeoff', name:'After Takeoff',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:1,
         running:true,rpm:2500,oilP:75,oilT:185,beacon:true,strobe:true,land:true,flaps:10,
-        airborne:true,ias:80,altFt:1800,vsi:700,hdg:270,pitch:8,xpdr:'ALT'},
+        trim:0.5,airborne:true,ias:80,altFt:1800,vsi:700,hdg:270,pitch:8,xpdr:'ALT'},
  items:[
   ['FLAPS, POWER','UP, FULL THROTTLE — 80 MPH Vy', s=>s.flaps===0,'flaps'],
   ['LIGHTS','AS REQUIRED']
@@ -185,9 +185,9 @@ const FLOWS = [
 {id:'climb', name:'Climb',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:1,
         running:true,rpm:2500,oilP:75,oilT:185,beacon:true,strobe:true,land:true,flaps:10,
-        airborne:true,ias:80,altFt:1800,vsi:700,hdg:270,pitch:8,xpdr:'ALT'},
+        trim:0.5,airborne:true,ias:80,altFt:1800,vsi:700,hdg:270,pitch:8,xpdr:'ALT'},
  items:[
-  ['AIRSPEED',"80 MPH (100 MPH EXTENDED CLIMB)", s=>near(s.ias,80,12)],
+  ['AIRSPEED',"80 MPH (100 MPH EXTENDED CLIMB)", s=>near(s.ias,80,12),'trim'],
   ['FLAPS','UP', s=>s.flaps===0,'flaps'],
   ['ENGINE INSTRUMENTS','CK, 400° CHT MAX', s=>s.cht<400],
   ['LIGHTS','A/R', s=>!s.land,'land'],
@@ -197,8 +197,8 @@ const FLOWS = [
 
 {id:'cruise', name:'Cruise',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:0.92,
-        running:true,rpm:2450,oilP:74,oilT:190,beacon:true,strobe:true,flaps:0,
-        airborne:true,ias:118,altFt:4500,vsi:0,hdg:270,pitch:1,xpdr:'ALT'},
+        running:true,rpm:2300,oilP:74,oilT:190,beacon:true,strobe:true,flaps:0,
+        trim:0.75,airborne:true,ias:100,altFt:4500,vsi:0,hdg:270,pitch:1,xpdr:'ALT'},
  items:[
   ['POWER','SET (2,300–2,400 RPM)', s=>s.rpm>=2250&&s.rpm<=2450,'throttle'],
   ['MIXTURE',"LEAN AS REQ >3,000' MSL", s=>s.mixture<0.85,'mixture'],
@@ -209,7 +209,7 @@ const FLOWS = [
 {id:'descent', name:'Descent / Approach',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'LEFT',mixture:0.7,throttle:0.9,
         running:true,rpm:2400,oilP:73,oilT:190,beacon:true,strobe:true,flaps:0,
-        airborne:true,ias:120,altFt:5500,vsi:0,hdg:270,pitch:0,xpdr:'ALT'},
+        trim:0.78,airborne:true,ias:102,altFt:5500,vsi:0,hdg:270,pitch:0,xpdr:'ALT'},
  items:[
   ['THROTTLE','2,000 RPM', s=>near(s.rpm,2000,140),'throttle'],
   ['ENGINE','MONITOR CHT COOLING', s=>s.cht<370],
@@ -223,16 +223,16 @@ const FLOWS = [
 {id:'pattern', name:'Traffic Pattern',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:1,
         running:true,rpm:2500,oilP:74,oilT:188,beacon:true,strobe:true,land:true,
-        flaps:0,carb:false,airborne:true,ias:80,altFt:1400,vsi:700,hdg:270,pitch:8,xpdr:'ALT'},
+        flaps:0,carb:false,trim:0.5,airborne:true,ias:80,altFt:1400,vsi:700,hdg:270,pitch:8,xpdr:'ALT'},
  items:[
-  ['CLIMB','80 MPH', s=>near(s.ias,80,15)],
-  ['LEVEL','ACCELERATE 90\u2013100 MPH', s=>s.ias>=88],
+  ['CLIMB','80 MPH', s=>near(s.ias,80,15),'trim'],
+  ['LEVEL','ACCELERATE 90\u2013100 MPH', s=>s.ias>=88,'trim'],
   ['THROTTLE','2,200 RPM', s=>near(s.rpm,2200,120),'throttle'],
   ['DOWNWIND','HT, HDG, SPEED, SPACING'],
   ['ABEAM NUMBERS','THROTTLE 1,700 RPM', s=>near(s.rpm,1700,120),'throttle'],
   ['CARB HEAT','ON', s=>s.carb,'carbheat'],
   ['AIRSPEED','<100 MPH \u2014 FLAP 10\u00b0', s=>s.flaps===10,'flaps'],
-  ['AIRSPEED','80 MPH', s=>near(s.ias,80,14)],
+  ['AIRSPEED','80 MPH', s=>near(s.ias,80,14),'trim'],
   ['THROTTLE','1,500 RPM', s=>near(s.rpm,1500,120),'throttle'],
   ['BASE TURN','FLAP 20\u00b0', s=>s.flaps===20,'flaps'],
   ['FINAL','FLAP 30\u00b0', s=>s.flaps===30,'flaps'],
@@ -243,7 +243,7 @@ const FLOWS = [
 {id:'before-landing', name:'Before Landing',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'LEFT',mixture:0.7,throttle:0.4,
         running:true,rpm:1800,oilP:70,oilT:186,beacon:true,strobe:true,flaps:0,
-        airborne:true,ias:95,altFt:2200,vsi:-400,hdg:270,pitch:-2,xpdr:'ALT'},
+        trim:0.6,airborne:true,ias:88,altFt:2200,vsi:-400,hdg:270,pitch:-2,xpdr:'ALT'},
  items:[
   ['GAS, UNDERCARRIAGE','BOTH TANKS, CHECKED', s=>s.fuel==='BOTH','fuel'],
   ['MIXTURE, PROP, FLAPS',"FULL RICH <3,000' MSL, FLAP 30°", s=>s.mixture>0.93&&s.flaps>=20,'mixture'],
@@ -284,7 +284,7 @@ const FLOWS = [
 {id:'eng-fail-air', name:'⚠ Engine Failure Inflight',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'LEFT',mixture:0.6,throttle:0,
         running:false,rpm:180,oilP:0,oilT:150,beacon:true,strobe:true,flaps:0,
-        airborne:true,ias:85,altFt:3500,vsi:-700,hdg:270,pitch:-4,xpdr:'ALT'},
+        trim:0.58,airborne:true,ias:86,altFt:3500,vsi:-700,hdg:270,pitch:-4,xpdr:'ALT'},
  items:[
   ['AIRSPEED','75 KTS — BEST GLIDE'],
   ['LANDING SPOT','LOCATE'],
@@ -304,7 +304,7 @@ const FLOWS = [
 {id:'eng-fire-air', name:'⚠ Engine Fire In-Flight',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:0.8,
         running:true,rpm:2300,oilP:70,oilT:210,beacon:true,strobe:true,flaps:0,
-        airborne:true,ias:110,altFt:3000,vsi:0,hdg:270,xpdr:'ALT'},
+        trim:0.75,airborne:true,ias:100,altFt:3000,vsi:0,hdg:270,xpdr:'ALT'},
  items:[
   ['MIXTURE','IDLE CUTOFF', s=>s.mixture<0.06,'mixture'],
   ['FUEL SELECTOR','OFF', s=>s.fuel==='OFF','fuel'],
@@ -333,7 +333,7 @@ const FLOWS = [
 {id:'elec-fire', name:'⚠ Electrical Fire',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:0.8,
         running:true,rpm:2300,oilP:72,oilT:190,beacon:true,strobe:true,land:true,flaps:0,
-        airborne:true,ias:110,altFt:3000,hdg:270,xpdr:'ALT'},
+        trim:0.75,airborne:true,ias:100,altFt:3000,hdg:270,xpdr:'ALT'},
  items:[
   ['MASTER SWITCH','OFF', s=>!s.bat&&!s.alt,'master'],
   ['ALL ELECTRICAL','OFF', s=>lightsOff(s)&&!s.beacon&&!s.pitot,'beacon'],
@@ -346,7 +346,7 @@ const FLOWS = [
 {id:'elec-fail', name:'⚠ Electrical Failures',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:0.85,
         running:true,rpm:2400,oilP:73,oilT:190,beacon:true,strobe:true,flaps:0,
-        airborne:true,ias:115,altFt:4000,hdg:270,xpdr:'ALT'},
+        trim:0.75,airborne:true,ias:100,altFt:4000,hdg:270,xpdr:'ALT'},
  items:[
   ['OVERCHARGE?','ALTERNATOR — OFF', s=>!s.alt,'master'],
   ['LOW VOLTAGE LIGHT?','AVIONICS — OFF', s=>!s.avionics,'avionics'],

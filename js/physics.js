@@ -66,13 +66,27 @@ function physics(dt){
     S.hobbs += dt/3600;
   }
 
-  /* --- flight --- */
+  /* --- flight ---
+     Pitch for speed, power for altitude. Airspeed and climb rate used to be
+     derived from RPM independently, which let full throttle produce a fast
+     climb AND a high cruise speed at the same time — energy from nowhere.
+
+     Now the trim wheel sets the speed the aeroplane holds, and the throttle
+     decides whether that speed is flown level, climbing or descending. There
+     is no cap: the speed is whatever the trim asks for.
+
+       trim 0.50  (the takeoff setting)  ->  80 MPH, Vy
+       trim 0.75                         -> 100 MPH, level cruise
+       trim 1.00                         -> 120 MPH                            */
   if(S.airborne){
-    const drag = S.flaps*0.42;
-    const iasTgt = Math.max(45, 52 + (S.rpm-900)/1500*72 - drag);
-    S.ias += (iasTgt-S.ias)*Math.min(1,dt*0.35);
-    const vsTgt = Math.max(-1600,Math.min(1400,(S.rpm-2150)*0.85 - S.flaps*9));
-    S.vsi += (vsTgt-S.vsi)*Math.min(1,dt*0.5);
+    const vTrim = Math.max(55, Math.min(140, 80 + (S.trim-0.5)*80 - S.flaps*0.4));
+    S.ias += (vTrim-S.ias)*Math.min(1,dt*0.25);
+
+    /* Power needed to hold the current speed in level flight. Anything above
+       it climbs, anything below descends. 2,300 RPM holds 100 MPH level. */
+    const rpmLevel = 1300 + 10*S.ias + 18*S.flaps;
+    const vsTgt = Math.max(-900, Math.min(1000, (S.rpm-rpmLevel)*1.5));
+    S.vsi += (vsTgt-S.vsi)*Math.min(1,dt*0.4);
     S.altFt = Math.max(0, S.altFt + S.vsi*dt/60);
   }else{
     S.ias += ((S.rpm>1500? Math.min(45,(S.rpm-1500)/40) : 0)-S.ias)*Math.min(1,dt*0.8);
