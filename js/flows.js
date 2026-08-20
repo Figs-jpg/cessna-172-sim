@@ -11,7 +11,9 @@
 const near=(v,t,tol)=>Math.abs(v-t)<=tol;
 
 const FLOWS = [
-{id:'preflight', name:'Preflight', scene:{},
+/* The card's preflight is split in two: the cockpit half, which works the
+   panel, and the walk-around, which is pure recall with nothing to touch. */
+{id:'preflight', name:'Preflight · Cockpit', scene:{},
  items:[
   ['MX STATUS','COMPLETE'],
   ['HOBBS & TACH','CK & RECORD'],
@@ -27,7 +29,15 @@ const FLOWS = [
   ['FLAPS','EXTEND', s=>s.flaps===30,'flaps'],
   ['JPI','PROGRAM'],
   ["EXT/INT LTS","CK / AS REQ'D", s=>s.beacon||s.land||s.nav,'beacon'],
-  ['BATT SWITCH','OFF', s=>!s.bat,'master'],
+  ['BATT SWITCH','OFF', s=>!s.bat,'master']
+]},
+
+{id:'walkaround', name:'Preflight · Walk-around',
+ // Nothing here touches the panel — the aeroplane sits cold and dark while
+ // you walk it. Use Recall mode to drill this from memory.
+ // Flaps stay down: the cockpit half lowers them so you can inspect them.
+ scene:{flaps:30},
+ items:[
   ['WINDSHIELD','CLEAR / CLEAN'],
   ['L. LANDING GEAR','CK'],
   ['L. FUEL DRAIN','CK'],
