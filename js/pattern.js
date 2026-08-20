@@ -184,12 +184,6 @@ function build(){
   document.getElementById('patLegs').innerHTML = PAT_LEGS.map(r=>
     `<tr><td><b>${r.leg}</b></td><td style="text-align:left;color:var(--txt);font-family:inherit;font-weight:400">${r.call}</td></tr>`
   ).join('');
-  document.getElementById('patNote').innerHTML =
-    `Plan view, north up. Runway 03/21 is pinned — picking the other end or the other `+
-    `direction of turns moves the circuit, not the tarmac. Landing on `+
-    `<b>${on21?'21':'03'}</b> you fly ${String(h).padStart(3,'0')}° magnetic; the reciprocal is `+
-    `${String(recip).padStart(2,'0')}. Calls come from the Traffic Pattern checklist. `+
-    `Pattern altitude is normally 1,000 ft AGL — confirm your field's.`;
 }
 
 document.getElementById('rwySel').addEventListener('click',e=>{

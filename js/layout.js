@@ -126,7 +126,6 @@ document.getElementById('app').innerHTML = `
         </div>
       </div>
       <table class="v" id="patLegs"></table>
-      <p class="note" id="patNote"></p>
     </aside>
   </main>
 </div>
