@@ -189,7 +189,6 @@ svg#patternSvg{width:100%;height:auto;display:block;border-radius:8px}
 .pat-num.on{fill:#e6edf3}
 .pat-abeam{fill:none;stroke:#4dd2ff;stroke-width:2.5}
 .pat-tie{stroke:#4dd2ff;stroke-width:1.2;stroke-dasharray:4 5;opacity:.7}
-.pat-lbl text{text-anchor:middle}
 .pat-leg{fill:var(--brand);font:700 12px ui-sans-serif,system-ui;letter-spacing:.1em}
 .pat-sub{fill:#b9c6d2;font:500 11px ui-sans-serif,system-ui}
 .pat-key .pat-leg{fill:#4dd2ff}

@@ -64,7 +64,7 @@ function build(){
   const ABEAM = add(NUMS, side, D);        // abeam the painted numbers
 
   const R = p => [f(p[0]), f(p[1])];
-  const [a,p1,p2,p3,p4,ab,nums] = [A,P1,P2,P3,P4,ABEAM,NUMS].map(R);
+  const [a,b_,p1,p2,p3,p4,ab,nums] = [A,B,P1,P2,P3,P4,ABEAM,NUMS].map(R);
 
   const arrow = (p,dir,size=12)=>{
     const n=[-dir[1],dir[0]];
@@ -72,9 +72,19 @@ function build(){
           r=add(add(p,dir,-size*0.5), n,-size*0.55);
     return `<path d="M${f(t[0])} ${f(t[1])} L${f(l[0])} ${f(l[1])} L${f(r[0])} ${f(r[1])} Z" class="pat-arrow"/>`;
   };
-  const label = (p, off, lines, cls='') =>
-    `<g class="pat-lbl ${cls}" transform="translate(${f(p[0]+off[0])},${f(p[1]+off[1])})">` +
-    lines.map((t,i)=>`<text y="${i*13}" class="${i?'pat-sub':'pat-leg'}">${t}</text>`).join('') + '</g>';
+  /* Push a label perpendicular to its own leg, on the side facing away from
+     the runway, and anchor it by the edge nearest the leg so the text grows
+     outward instead of straddling the line. Centred labels on a diagonal leg
+     always cross it, however far out you move them. */
+  const label = (p, dir, lines, cls='', dist=40) => {
+    const n0=[-dir[1],dir[0]], away=[p[0]-CTR[0], p[1]-CTR[1]];
+    const n = (n0[0]*away[0]+n0[1]*away[1])>=0 ? n0 : [-n0[0],-n0[1]];
+    const anchor = n[0]>0.35 ? 'start' : n[0]<-0.35 ? 'end' : 'middle';
+    const lift = n[1]>0.35 ? 10 : n[1]<-0.35 ? -22 : -6;   // clear the leg vertically too
+    const x=p[0]+n[0]*dist, y=p[1]+n[1]*dist+lift;
+    return `<g class="pat-lbl ${cls}" text-anchor="${anchor}" transform="translate(${f(x)},${f(y)})">` +
+      lines.map((t,i)=>`<text y="${i*13}" class="${i?'pat-sub':'pat-leg'}">${t}</text>`).join('') + '</g>';
+  };
 
   const out = [];
 
@@ -113,14 +123,14 @@ function build(){
   out.push(`<line x1="${nums[0]}" y1="${nums[1]}" x2="${ab[0]}" y2="${ab[1]}" class="pat-tie"/>`);
   out.push(`<circle cx="${ab[0]}" cy="${ab[1]}" r="6" class="pat-abeam"/>`);
 
-  // ---- leg labels, always pushed away from the runway ----
-  const S=58, F=50;
-  out.push(label(mid(R(A),p1),  [-side[0]*S, -side[1]*S], ['UPWIND',    PAT_LEGS[0].call]));
-  out.push(label(mid(p1,p2),    [ fwd[0]*F,   fwd[1]*F ], ['CROSSWIND', PAT_LEGS[1].call]));
-  out.push(label(mid(p2,p3),    [ side[0]*S,  side[1]*S], ['DOWNWIND',  PAT_LEGS[2].call]));
-  out.push(label(mid(p3,p4),    [-fwd[0]*F,  -fwd[1]*F ], ['BASE',      PAT_LEGS[4].call]));
-  out.push(label(mid(p4,R(A)),  [-side[0]*S, -side[1]*S], ['FINAL',     PAT_LEGS[5].call]));
-  out.push(label(ab,            [ side[0]*26+10, side[1]*26+4], ['ABEAM THE NUMBERS', PAT_LEGS[3].call], 'pat-key'));
+  // ---- leg labels: each pushed clear of its own leg ----
+  // midpoint of the CLIMB-OUT, not of the whole leg, which lies over the tarmac
+  out.push(label(mid(b_,p1),   fwd,       ['UPWIND',    PAT_LEGS[0].call]));
+  out.push(label(mid(p1,p2),   side,      ['CROSSWIND', PAT_LEGS[1].call]));
+  out.push(label(mid(p2,p3),   neg(fwd),  ['DOWNWIND',  PAT_LEGS[2].call]));
+  out.push(label(mid(p3,p4),   neg(side), ['BASE',      PAT_LEGS[4].call]));
+  out.push(label(mid(p4,R(A)), fwd,       ['FINAL',     PAT_LEGS[5].call]));
+  out.push(label(ab,           neg(fwd),  ['ABEAM THE NUMBERS', PAT_LEGS[3].call], 'pat-key', 30));
 
   // ---- north arrow ----
   out.push(`<g transform="translate(74,${VH-90})">
