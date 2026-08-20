@@ -203,10 +203,9 @@ Open questions I have flagged and not resolved:
 
 - **Pattern altitude** is captioned as the standard 1,000 ft AGL. The real
   field's figure is unknown.
-- **The airport has two runways**, and the user flies 21 and 03. The runway
-  selector currently offers 21 and 30; 30 may be wrong and want replacing with
-  03, or the field may genuinely have both. *Confirm before changing.*
-- **Runway 21 with left-hand traffic** is confirmed.
+- **Runway 03/21, left-hand traffic** — confirmed. One runway; the selector
+  offers its two ends. The tarmac is pinned in `pattern.js` (`AXIS`, `CTR`) and
+  only the circuit moves, because it is the same physical runway either way.
 - `SPOT TRACKER — CHECK` and `DEPARTURE BRIEF — REVIEW` are kept at the end of
   the Run-up from the old card; the instructor's card does not have them.
 - Before Takeoff's flaps item accepted 0° or 10°; the Run-up's now demands 10°

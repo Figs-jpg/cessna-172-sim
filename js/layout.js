@@ -117,7 +117,7 @@ document.getElementById('app').innerHTML = `
       <div class="row">
         <div class="seg" id="rwySel">
           <button data-rwy="21" aria-pressed="true">RWY 21</button>
-          <button data-rwy="30" aria-pressed="false">RWY 30</button>
+          <button data-rwy="3" aria-pressed="false">RWY 03</button>
         </div>
         <span class="grow"></span>
         <div class="seg" id="handSel">
