@@ -113,22 +113,11 @@ const FLOWS = [
   ['BRAKES','CHECK BOTH SIDES']
 ]},
 
-{id:'before-takeoff', name:'Before Takeoff',
- scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:0.18,
-        running:true,rpm:1000,oilP:68,oilT:165,beacon:true,land:true,flaps:0,trim:0.3,
-        airborne:false,altFt:1200,ias:0},
- items:[
-  ['FLIGHT CONTROLS','FREE AND CORRECT'],
-  ['INSTRUMENTS','FLIGHT, NAV, COMM'],
-  ['GAS','QUANTITY CHECKED'],
-  ['AIR TRIM','SET', s=>near(s.trim,0.5,0.12),'trim'],
-  ['RUNUP','COMPLETE'],
-  ['FLAPS','SET FOR TAKEOFF (10° SHORT/SOFT FIELD)', s=>s.flaps===0||s.flaps===10,'flaps']
-]},
-
 /* ---- Run-up ------------------------------------------------------------
-   The instructor's card compresses this to a single "RUNUP - COMPLETE" line
-   in Before Takeoff, so the detail comes from the earlier RMC card. The
+   This absorbs the card's Before Takeoff list, which was largely the same
+   checks: its trim and flap items were already here, and its "RUNUP -
+   COMPLETE" line only pointed at this list. Flight controls, instruments
+   and fuel quantity carried across. The
    engine models all of it: each magneto's drop is re-rolled on every page
    load, so the 150 max / 50 diff limits have to be read and compared. */
 {id:'runup', name:'Run-up',
@@ -138,6 +127,10 @@ const FLOWS = [
         magSeenL:false,magSeenR:false},
  items:[
   ['BRAKES','SET'],
+  // carried over from the card's Before Takeoff, which this list absorbs
+  ['FLIGHT CONTROLS','FREE AND CORRECT'],
+  ['INSTRUMENTS','FLIGHT, NAV, COMM'],
+  ['GAS','QUANTITY CHECKED'],
   ['TRIM','SET FOR TAKEOFF', s=>near(s.trim,0.5,0.12),'trim'],
   ['MIXTURE','SET FULL RICH', s=>s.mixture>0.93,'mixture'],
   ['OIL TEMP','GREEN', s=>s.oilT>=100],
