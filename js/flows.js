@@ -124,6 +124,36 @@ const FLOWS = [
   ['FLAPS','SET FOR TAKEOFF', s=>s.flaps===0||s.flaps===10,'flaps']
 ]},
 
+/* ---- Run-up ------------------------------------------------------------
+   The instructor's card compresses this to a single "RUNUP - COMPLETE" line
+   in Before Takeoff, so the detail comes from the earlier RMC card. The
+   engine models all of it: each magneto's drop is re-rolled on every page
+   load, so the 150 max / 50 diff limits have to be read and compared. */
+{id:'runup', name:'Run-up',
+ scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:0.6,throttle:0.18,
+        running:true,rpm:1000,oilP:68,oilT:165,beacon:true,flaps:0,trim:0.3,carb:false,
+        land:false,strobe:false,airborne:false,altFt:1200,ias:0,
+        magSeenL:false,magSeenR:false},
+ items:[
+  ['BRAKES','SET'],
+  ['TRIM','SET FOR TAKEOFF', s=>near(s.trim,0.5,0.12),'trim'],
+  ['MIXTURE','SET FULL RICH', s=>s.mixture>0.93,'mixture'],
+  ['OIL TEMP','GREEN', s=>s.oilT>=100],
+  ['THROTTLE','1,700 RPM', s=>near(s.rpm,1700,90),'throttle'],
+  ['MIXTURE',"LEAN (>3,000' MSL)"],
+  ['MAG CHECK','150 MAX / 50 DIFF', s=>s.magSeenL&&s.magSeenR&&s.mags==='BOTH','mags'],
+  ["ENGINE T's & P's",'CK', s=>s.oilP>=60&&s.oilT>=100],
+  ['CARB HEAT','ON', s=>s.carb,'carbheat'],
+  ['THROTTLE','IDLE', s=>s.throttle<0.06,'throttle'],
+  ['CARB HEAT','OFF', s=>!s.carb,'carbheat'],
+  ['THROTTLE','1,000 RPM', s=>near(s.rpm,1000,140),'throttle'],
+  ['FUEL SELECTOR','BOTH (SINGLE >5,000 FT)', s=>s.fuel==='BOTH','fuel'],
+  ['FLAPS','SET A/R (10° SHORT/SOFT FIELD)', s=>s.flaps===0||s.flaps===10,'flaps'],
+  ['LIGHTS','SET A/R', s=>s.land||s.strobe,'land'],
+  ['SPOT TRACKER','CHECK'],
+  ['DEPARTURE BRIEF','REVIEW']
+]},
+
 {id:'cleared', name:'Cleared for Takeoff',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:0.18,
         running:true,rpm:1000,oilP:70,oilT:175,beacon:true,flaps:0,
