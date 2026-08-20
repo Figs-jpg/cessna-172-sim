@@ -85,7 +85,14 @@ function physics(dt){
     /* Power needed to hold the current speed in level flight. Anything above
        it climbs, anything below descends. 2,300 RPM holds 100 MPH level. */
     const rpmLevel = 1300 + 10*S.ias + 18*S.flaps;
-    const vsTgt = Math.max(-900, Math.min(1000, (S.rpm-rpmLevel)*1.5));
+    const excess = S.rpm - rpmLevel;
+    /* Surplus power climbs readily; a deficit sinks more gently, because the
+       descent is limited by glide performance rather than by missing power.
+       Sink is capped by configuration: about 700 fpm clean, which is the
+       172's power-off glide, rising to ~1,060 with full flap. */
+    const sinkMax = 700 + S.flaps*12;
+    const vsTgt = excess >= 0 ? Math.min(1000, excess*1.5)
+                              : Math.max(-sinkMax, excess*0.75);
     S.vsi += (vsTgt-S.vsi)*Math.min(1,dt*0.4);
     S.altFt = Math.max(0, S.altFt + S.vsi*dt/60);
   }else{
