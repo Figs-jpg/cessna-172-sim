@@ -62,7 +62,7 @@ const FLOWS = [
   ['OIL QUANTITY','CHECK'],
   ['SUMP FUEL','DRAIN'],
   // --- nose ---
-  ['AIR INTAKES','CLEAR'],
+  ['AIR INTAKES','CLEAR (4)'],
   ['STARTER BELT','TAUT'],
   ['PROP','CLEAN & CLEAR'],
   ['SPINNER','CLEAN & CLEAR'],
@@ -79,7 +79,7 @@ const FLOWS = [
   ['DOORS','CLOSED, LATCHED'],
   ['PASSENGER BRIEFING','COMPLETE'],
   ['FUEL SELECTOR','BOTH', s=>s.fuel==='BOTH','fuel'],
-  ['MIXTURE','RICH', s=>s.mixture>0.93,'mixture'],
+  ['MIXTURE','FULL RICH', s=>s.mixture>0.93,'mixture'],
   ['THROTTLE','CLOSED', s=>s.throttle<0.04,'throttle'],
   ['CARB HEAT','OFF', s=>!s.carb,'carbheat'],
   ['CIRCUIT BREAKERS','ALL IN'],
@@ -92,11 +92,11 @@ const FLOWS = [
  items:[
   ['KEY IN IGNITION','CHECK'],
   ['MASTER SWITCH','ON', s=>s.bat&&s.alt,'master'],
-  ['PRIMER','AS REQUIRED', s=>s.primer>0,'primer'],
+  ['PRIMER','1× HOT, 2× COLD', s=>s.primer>0,'primer'],
   ['THROTTLE','CRACK 1/8 INCH', s=>s.throttle>0.05&&s.throttle<0.3,'throttle'],
   ['BRAKES','SET'],
-  ['CRANK ENGINE','START', s=>s.running,'mags'],
-  ['OIL PRESSURE','CHECK', s=>s.oilP>=60],
+  ['CRANK ENGINE','THEN 1,000 RPM', s=>s.running&&near(s.rpm,1000,180),'mags'],
+  ['OIL PRESSURE','GREEN — AMMETER CHARGING', s=>s.oilP>=60&&s.amps>3],
   ['AVIONICS MASTER','ON', s=>s.avionics,'avionics'],
   ['LIGHTS','TAXI LIGHTS ON', s=>s.land,'land']
 ]},
@@ -121,7 +121,7 @@ const FLOWS = [
   ['GAS','QUANTITY CHECKED'],
   ['AIR TRIM','SET', s=>near(s.trim,0.5,0.12),'trim'],
   ['RUNUP','COMPLETE'],
-  ['FLAPS','SET FOR TAKEOFF', s=>s.flaps===0||s.flaps===10,'flaps']
+  ['FLAPS','SET FOR TAKEOFF (10° SHORT/SOFT FIELD)', s=>s.flaps===0||s.flaps===10,'flaps']
 ]},
 
 /* ---- Run-up ------------------------------------------------------------
@@ -169,7 +169,7 @@ const FLOWS = [
         running:true,rpm:2500,oilP:75,oilT:185,beacon:true,strobe:true,land:true,flaps:10,
         airborne:true,ias:80,altFt:1800,vsi:700,hdg:270,pitch:8,xpdr:'ALT'},
  items:[
-  ['FLAPS, POWER','UP, CLIMB POWER SET', s=>s.flaps===0,'flaps'],
+  ['FLAPS, POWER','UP, FULL THROTTLE — 80 MPH Vy', s=>s.flaps===0,'flaps'],
   ['LIGHTS','AS REQUIRED']
 ]},
 
@@ -221,7 +221,7 @@ const FLOWS = [
         airborne:true,ias:95,altFt:2200,vsi:-400,hdg:270,pitch:-2,xpdr:'ALT'},
  items:[
   ['GAS, UNDERCARRIAGE','BOTH TANKS, CHECKED', s=>s.fuel==='BOTH','fuel'],
-  ['MIXTURE, PROP, FLAPS','RICH, SET FOR LANDING', s=>s.mixture>0.93,'mixture'],
+  ['MIXTURE, PROP, FLAPS',"FULL RICH <3,000' MSL, FLAP 30°", s=>s.mixture>0.93&&s.flaps>=20,'mixture'],
   ['LIGHTS','AS REQUIRED', s=>s.land,'land']
 ]},
 
