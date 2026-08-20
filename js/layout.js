@@ -7,11 +7,21 @@ document.getElementById('app').innerHTML = `
   <span class="brand">Cessna 172 SIM</span>
   <span class="tail">N46519 · C172K</span>
   <span class="grow"></span>
-  <div class="tabs" role="tablist">
+  <div class="tabs" id="topTabs" role="tablist">
+    <button role="tab" aria-selected="true"  data-top="flows">Flows</button>
+    <button role="tab" aria-selected="false" data-top="pattern">Traffic Pattern</button>
+    <button role="tab" aria-selected="false" data-top="sim">SIM</button>
+  </div>
+</header>
+
+<!-- ============================ FLOWS ============================ -->
+<div id="topFlows">
+<div class="subbar">
+  <div class="tabs" id="subTabs" role="tablist">
     <button role="tab" aria-selected="true"  data-view="train">Trainer</button>
     <button role="tab" aria-selected="false" data-view="ref">Reference</button>
   </div>
-</header>
+</div>
 
 <main id="viewTrain">
   <!-- ================= PANEL ================= -->
@@ -94,4 +104,40 @@ document.getElementById('app').innerHTML = `
     </p>
   </section>
 </main>
+</div>
+
+<!-- ======================= TRAFFIC PATTERN ======================= -->
+<div id="topPattern" class="hide">
+  <main class="patgrid">
+    <section class="card" id="patCard">
+      <svg id="patternSvg" viewBox="0 0 1000 760" aria-label="Traffic pattern diagram"></svg>
+    </section>
+    <aside class="card">
+      <h2>Pattern</h2>
+      <div class="row">
+        <div class="seg" id="rwySel">
+          <button data-rwy="21" aria-pressed="true">RWY 21</button>
+          <button data-rwy="30" aria-pressed="false">RWY 30</button>
+        </div>
+        <span class="grow"></span>
+        <div class="seg" id="handSel">
+          <button data-hand="L" aria-pressed="true">Left</button>
+          <button data-hand="R" aria-pressed="false">Right</button>
+        </div>
+      </div>
+      <table class="v" id="patLegs"></table>
+      <p class="note" id="patNote"></p>
+    </aside>
+  </main>
+</div>
+
+<!-- ============================= SIM ============================= -->
+<div id="topSim" class="hide">
+  <main class="simgrid">
+    <section class="card">
+      <h2>SIM</h2>
+      <p class="note">Not built yet — this is where the flyable pattern will go.</p>
+    </section>
+  </main>
+</div>
 `;

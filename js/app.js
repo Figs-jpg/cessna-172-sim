@@ -164,8 +164,18 @@ addEventListener('keydown',(e)=>{
 document.getElementById('vtable').innerHTML =
   VSPEEDS.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('');
 
-/* view tabs */
-document.querySelector('.tabs').addEventListener('click',(e)=>{
+/* top-level tabs: Flows / Traffic Pattern / SIM */
+document.getElementById('topTabs').addEventListener('click',(e)=>{
+  const b=e.target.closest('button'); if(!b) return;
+  [...e.currentTarget.children].forEach(c=>c.setAttribute('aria-selected', c===b));
+  const top=b.dataset.top;
+  document.getElementById('topFlows').classList.toggle('hide',   top!=='flows');
+  document.getElementById('topPattern').classList.toggle('hide', top!=='pattern');
+  document.getElementById('topSim').classList.toggle('hide',     top!=='sim');
+});
+
+/* sub-tabs inside Flows: Trainer / Reference */
+document.getElementById('subTabs').addEventListener('click',(e)=>{
   const b=e.target.closest('button'); if(!b) return;
   [...e.currentTarget.children].forEach(c=>c.setAttribute('aria-selected', c===b));
   document.getElementById('viewTrain').classList.toggle('hide', b.dataset.view!=='train');

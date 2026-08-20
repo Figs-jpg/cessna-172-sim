@@ -167,3 +167,31 @@ table.v td{padding:8px 14px;border-bottom:1px solid var(--line)}
 table.v td:last-child{text-align:right;font:700 13px ui-monospace,Menlo,monospace;color:var(--brand)}
 table.v tr:last-child td{border-bottom:none}
 .hide{display:none !important}
+
+/* ---------- sub-tab bar under the header (inside Flows) ---------- */
+.subbar{padding:10px 18px 0;display:flex}
+.subbar .tabs{background:transparent;border:1px solid var(--line)}
+
+/* ---------- traffic pattern ---------- */
+main.patgrid{grid-template-columns:1fr 360px}
+main.simgrid{grid-template-columns:1fr}
+@media(max-width:1100px){main.patgrid,main.simgrid{grid-template-columns:1fr}}
+#patCard{padding:10px}
+svg#patternSvg{width:100%;height:auto;display:block;border-radius:8px}
+.pat-track{fill:none;stroke:var(--brand);stroke-width:3;stroke-linejoin:round;
+  stroke-dasharray:11 7;opacity:.95}
+.pat-arrow{fill:var(--brand)}
+.pat-rwy{fill:#2b2f33;stroke:#e6edf3;stroke-width:1.5}
+.pat-cl{stroke:#e6edf3;stroke-width:1.6;opacity:.8}
+.pat-thr{stroke:#e6edf3;stroke-width:2;opacity:.75}
+.pat-num{fill:#e6edf3;font:700 20px ui-sans-serif,system-ui;text-anchor:middle;
+  dominant-baseline:middle;letter-spacing:.06em}
+.pat-abeam{fill:none;stroke:#4dd2ff;stroke-width:2.5}
+.pat-tie{stroke:#4dd2ff;stroke-width:1.2;stroke-dasharray:4 5;opacity:.7}
+.pat-lbl text{text-anchor:middle}
+.pat-leg{fill:var(--brand);font:700 12px ui-sans-serif,system-ui;letter-spacing:.1em}
+.pat-sub{fill:#b9c6d2;font:500 11px ui-sans-serif,system-ui}
+.pat-key .pat-leg{fill:#4dd2ff}
+.pat-n{fill:#e6edf3;font:700 13px ui-sans-serif,system-ui;text-anchor:middle}
+.pat-title{fill:#e6edf3;font:700 22px ui-sans-serif,system-ui;text-anchor:end;letter-spacing:.08em}
+.pat-title2{fill:#8b98a5;font:600 12px ui-sans-serif,system-ui;text-anchor:end;letter-spacing:.12em}
