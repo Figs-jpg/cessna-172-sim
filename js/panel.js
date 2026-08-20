@@ -49,7 +49,9 @@ const TIER_A = 520, TIER_B = 566;  // pull-knob row / breaker row
 const PLUNGER = {y:504, travel:46};
 /* ---- pedestal ---- */
 const PED = {x:566, w:200, y:614};
-const TRIM=[598,726], FUELSEL=[666,868];
+// Trim sits high on the pedestal face: its ELEVATOR TRIM caption runs to
+// ty+80, and the fuel selector's backing plate starts at 804.
+const TRIM=[598,700], FUELSEL=[666,868];
 
 /* value → angle mappers */
 const mASI  = mapper(40,200, 25,335);
@@ -507,17 +509,15 @@ SQG.forEach((q,i)=>{
 });
 
 /* ---------- 28V payload power + Hobbs hour meter ---------- */
+// Hobbs hour meter, centred under the engine gauge cluster now that the
+// 28V payload switch that used to sit beside it has been removed.
 svgParts.push(`
-  <circle class="bezel" cx="1096" cy="364" r="30"/>
-  <circle cx="1096" cy="364" r="24" fill="#141a1f"/>
-  <text class="slbl tiny" x="1096" y="352">28V PAYLOAD</text>
-  <rect x="1091" y="358" width="10" height="16" rx="4" fill="#2c333a" stroke="#0a0d10"/>
-  <circle class="bezel" cx="1200" cy="372" r="34"/>
-  <circle cx="1200" cy="372" r="28" fill="#141a1f"/>
-  <text class="slbl tiny" x="1200" y="362">HOURS</text>
-  <rect x="1176" y="366" width="48" height="15" rx="2" fill="#05070a" stroke="#39424b"/>
-  <text id="hobbs" class="dlbl sm" x="1200" y="374">0000.0</text>
-  <text class="slbl tiny" x="1200" y="392">HOBBS</text>`);
+  <circle class="bezel" cx="1130" cy="368" r="34"/>
+  <circle cx="1130" cy="368" r="28" fill="#141a1f"/>
+  <text class="slbl tiny" x="1130" y="358">HOURS</text>
+  <rect x="1106" y="362" width="48" height="15" rx="2" fill="#05070a" stroke="#39424b"/>
+  <text id="hobbs" class="dlbl sm" x="1130" y="370">0000.0</text>
+  <text class="slbl tiny" x="1130" y="388">HOBBS</text>`);
 
 /* ==========================================================================
    SUB-PANEL SHELF
@@ -687,16 +687,16 @@ svgParts.push(`
       <rect class="hit" x="${tx-20}" y="${ty-54}" width="40" height="108"/>
       <g id="kn_trim"><rect x="${tx-16}" y="${ty-4}" width="32" height="8" rx="3" fill="#ffcc33" opacity=".85"/></g>
     </g>
-    <text class="slbl tiny" x="${tx+40}" y="${ty+3}">TAKE OFF</text>
+    <text class="slbl tiny" x="${tx+32}" y="${ty+3}">TAKE OFF</text>
     <line x1="${tx+15}" y1="${ty}" x2="${tx+24}" y2="${ty}" class="tick maj"/>
     <text class="slbl tiny" x="${tx+4}" y="${ty+64}">NOSE UP</text>
     <text class="iname" x="${tx}" y="${ty+80}">ELEVATOR TRIM</text>
     <rect class="hl" x="${tx-24}" y="${ty-70}" width="48" height="150" id="hl_trim"/></g>`;
   svgParts.push(g);
 }
-/* vent grille on the pedestal face */
+/* vent grille on the pedestal face — kept right of the trim placards */
 for(let i=0;i<9;i++)
-  svgParts.push(`<line x1="${PED.x+50}" y1="${PED.y+92+i*8}" x2="${PED.x+PED.w-16}" y2="${PED.y+92+i*8}" stroke="#20262c" stroke-width="4"/>`);
+  svgParts.push(`<line x1="${PED.x+96}" y1="${PED.y+92+i*8}" x2="${PED.x+PED.w-16}" y2="${PED.y+92+i*8}" stroke="#20262c" stroke-width="4"/>`);
 
 /* Fuel selector valve — on the floor between the seats */
 {
