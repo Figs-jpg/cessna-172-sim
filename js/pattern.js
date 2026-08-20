@@ -9,7 +9,7 @@
    turns moves the CIRCUIT around it, which is the thing that actually
    changes in the air. */
 
-const PAT = { rwy: 21, hand: 'L' };        // active end, left/right traffic
+const PAT = { rwy: 21, hand: 'L', call: null };   // active end, turns, selected call
 
 /* One list feeds both the diagram labels and the side panel, so they cannot
    drift apart. */
@@ -21,6 +21,26 @@ const PAT_LEGS = [
   {leg:'BASE',      call:'1,500 RPM · flap 20°'},
   {leg:'FINAL',     call:'Flap 30° · 75/70 MPH'}
 ];
+
+/* Radio calls for a non-towered field, in AIM order: field, callsign,
+   position and intention, field again. The aeroplane's own callsign is used;
+   the field name is a placeholder until it is supplied. */
+const PAT_FIELD = '[FIELD]';
+const CALLSIGN  = 'Cessna four six five one niner';
+const DIGITS = ['zero','one','two','three','four','five','six','seven','eight','niner'];
+const spoken = r => String(r).padStart(2,'0').split('').map(d=>DIGITS[+d]).join(' ');
+
+const PAT_CALLS = [
+  {id:'taxi',      name:'Taxi',            say:(r,h)=>`taxiing to runway ${spoken(r)}`},
+  {id:'departing', name:'Departing',       say:(r,h)=>`departing runway ${spoken(r)}, ${h} closed traffic`},
+  {id:'crosswind', name:'Crosswind',       say:(r,h)=>`turning ${h} crosswind runway ${spoken(r)}`},
+  {id:'downwind',  name:'Downwind',        say:(r,h)=>`midfield ${h} downwind runway ${spoken(r)}`},
+  {id:'base',      name:'Base',            say:(r,h)=>`turning ${h} base runway ${spoken(r)}`},
+  {id:'final',     name:'Final',           say:(r,h)=>`turning final runway ${spoken(r)}, full stop`},
+  {id:'clear',     name:'Clear of runway', say:(r,h)=>`clear of runway ${spoken(r)}`}
+];
+const callText = c =>
+  `${PAT_FIELD} traffic, ${CALLSIGN}, ${c.say(PAT.rwy, PAT.hand==='L'?'left':'right')}, ${PAT_FIELD}.`;
 
 (function(){
 const SVG = document.getElementById('patternSvg');
@@ -138,7 +158,9 @@ function build(){
   const outside = neg(side);          // away from the circuit, not into it
   out.push(label(mid(b_,p1),      fwd,       ['UPWIND',    PAT_LEGS[0].call], '', 40, outside));
   out.push(label(mid(p1,p2),      side,      ['CROSSWIND', PAT_LEGS[1].call]));
-  out.push(label(mid(p2,p3),      neg(fwd),  ['DOWNWIND',  PAT_LEGS[2].call]));
+  // biased along the leg: the midfield downwind call point sits at the
+  // midpoint, and the two would otherwise occupy the same spot
+  out.push(label(lerp(p2,p3,0.3),  neg(fwd),  ['DOWNWIND',  PAT_LEGS[2].call]));
   out.push(label(mid(p3,p4),      neg(side), ['BASE',      PAT_LEGS[4].call]));
   // biased toward the threshold so it does not overhang into the base leg
   out.push(label(lerp(p4,a,0.72), fwd,       ['FINAL',     PAT_LEGS[5].call], '', 44, outside));
@@ -151,6 +173,27 @@ function build(){
   out.push(`<g id="abeamLbl" class="pat-lbl pat-key" transform="translate(${f(q0[0])},${f(q0[1])})">
       <text y="-4" class="pat-leg">ABEAM THE NUMBERS</text>
       <text y="9" class="pat-sub">${PAT_LEGS[3].call}</text></g>`);
+
+  /* ---- radio call points ----
+     Positions follow the flight: hold short, lined up, then each turn, then
+     clear of the runway. Numbered so the order is readable at a glance. */
+  const callAt = {
+    taxi:      add(add(A, side, 48), fwd, -22),
+    departing: add(A, fwd, 34),
+    crosswind: P1,
+    downwind:  mid(P2, P3),
+    base:      P3,
+    final:     P4,
+    clear:     add(B, fwd, -38)
+  };
+  PAT_CALLS.forEach((c,i)=>{
+    const q = R(callAt[c.id]);
+    const on = PAT.call === c.id;
+    out.push(`<g class="pat-call${on?' sel':''}" data-call="${c.id}">
+        <circle cx="${q[0]}" cy="${q[1]}" r="11" class="pat-callhit"/>
+        <circle cx="${q[0]}" cy="${q[1]}" r="9"/>
+        <text x="${q[0]}" y="${q[1]}">${i+1}</text></g>`);
+  });
 
   // ---- north arrow ----
   out.push(`<g transform="translate(74,${VH-90})">
@@ -184,7 +227,22 @@ function build(){
   document.getElementById('patLegs').innerHTML = PAT_LEGS.map(r=>
     `<tr><td><b>${r.leg}</b></td><td style="text-align:left;color:var(--txt);font-family:inherit;font-weight:400">${r.call}</td></tr>`
   ).join('');
+
+  document.getElementById('patCalls').innerHTML = PAT_CALLS.map((c,i)=>
+    `<div class="callrow${PAT.call===c.id?' sel':''}" data-call="${c.id}">
+       <span class="callno">${i+1}</span>
+       <span class="calltxt"><b>${c.name}</b><em>${callText(c)}</em></span>
+     </div>`).join('');
 }
+
+/* Selecting from either the diagram or the list highlights both. */
+function selectCall(id){ PAT.call = (PAT.call===id ? null : id); build(); }
+SVG.addEventListener('click', e=>{
+  const g = e.target.closest('[data-call]'); if(g) selectCall(g.dataset.call);
+});
+document.getElementById('patCalls').addEventListener('click', e=>{
+  const r = e.target.closest('[data-call]'); if(r) selectCall(r.dataset.call);
+});
 
 document.getElementById('rwySel').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;

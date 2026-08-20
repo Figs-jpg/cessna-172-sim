@@ -126,6 +126,8 @@ document.getElementById('app').innerHTML = `
         </div>
       </div>
       <table class="v" id="patLegs"></table>
+      <h2>Radio Calls</h2>
+      <div id="patCalls"></div>
     </aside>
   </main>
 </div>

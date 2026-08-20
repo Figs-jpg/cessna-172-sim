@@ -190,6 +190,28 @@ svg#patternSvg{width:100%;height:auto;display:block;border-radius:8px}
 .pat-abeam{fill:none;stroke:#4dd2ff;stroke-width:2.5}
 .pat-tie{stroke:#4dd2ff;stroke-width:1.2;stroke-dasharray:4 5;opacity:.7}
 .pat-lead{stroke:#4dd2ff;stroke-width:1.2;opacity:.75}
+/* radio call points on the diagram */
+.pat-call{cursor:pointer}
+.pat-call circle{fill:#16302f;stroke:#4dd2ff;stroke-width:1.6}
+.pat-call .pat-callhit{fill:transparent;stroke:none}
+.pat-call text{fill:#9fe6ff;font:700 10px ui-sans-serif,system-ui;text-anchor:middle;
+  dominant-baseline:central;pointer-events:none}
+.pat-call:hover circle{fill:#1d4746}
+.pat-call.sel circle{fill:var(--brand);stroke:#fff;stroke-width:2}
+.pat-call.sel text{fill:#151a1f}
+/* radio call list */
+#patCalls{padding:4px 6px 10px}
+.callrow{display:flex;gap:9px;align-items:flex-start;padding:7px 8px;border-radius:8px;
+  cursor:pointer;border:1px solid transparent}
+.callrow:hover{background:rgba(255,255,255,.04)}
+.callrow.sel{background:rgba(255,176,32,.10);border-color:rgba(255,176,32,.35)}
+.callno{flex:0 0 18px;height:18px;margin-top:1px;border-radius:50%;background:#16302f;
+  border:1.4px solid #4dd2ff;color:#9fe6ff;font:700 10px/16px ui-sans-serif,system-ui;
+  text-align:center}
+.callrow.sel .callno{background:var(--brand);border-color:var(--brand);color:#151a1f}
+.calltxt{flex:1;font-size:12.5px;line-height:1.35}
+.calltxt b{display:block;color:var(--txt)}
+.calltxt em{display:block;color:var(--dim);font-style:normal;font-size:11.5px;margin-top:2px}
 #abeamLbl text{text-anchor:start}
 .pat-lbl text{text-anchor:middle}
 .pat-leg{fill:var(--brand);font:700 12px ui-sans-serif,system-ui;letter-spacing:.1em}
