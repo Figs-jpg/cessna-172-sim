@@ -77,6 +77,16 @@ document.getElementById('app').innerHTML = `
       <tr><td><b>Distress</b></td><td>121.5<br>Squawk 7700</td></tr>
       <tr><td><b>Ground fire start</b></td><td>Run @ 1,700 RPM<br>Throttle full open</td></tr>
       <tr><td><b>Start</b></td><td>Throttle cracked 1/8″</td></tr>
+      <tr><td><b>GUMS</b><br><span style="color:var(--dim)">Before landing</span></td>
+          <td style="text-align:left;color:var(--txt);font-family:inherit;font-weight:400">
+            Gas &mdash; both tanks<br>Undercarriage &mdash; checked<br>
+            Mixture &mdash; full rich<br>Switches &mdash; lights, carb heat</td></tr>
+      <tr><td><b>3 C's</b><br><span style="color:var(--dim)">Short final</span></td>
+          <td style="text-align:left;color:var(--txt);font-family:inherit;font-weight:400">
+            Configured<br>Cleared to land<br>Runway clear</td></tr>
+      <tr><td><b>Mag check</b><br><span style="color:var(--dim)">1,700 RPM</span></td>
+          <td>150 max drop<br>50 max diff</td></tr>
+      <tr><td><b>Pattern</b></td><td>2,200 RPM downwind<br>1,700 abeam<br>1,500 base</td></tr>
     </table>
     <p class="note">
       This trainer is a study aid, not a certified reference. The aircraft POH and the

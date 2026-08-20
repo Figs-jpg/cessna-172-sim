@@ -98,6 +98,7 @@ const FLOWS = [
   ['CRANK ENGINE','THEN 1,000 RPM', s=>s.running&&near(s.rpm,1000,180),'mags'],
   ['OIL PRESSURE','GREEN', s=>s.oilP>=60],
   ['AMMETER','CHARGING', s=>s.amps>3],
+  ['MIXTURE','GROUND LEAN', s=>s.mixture>0.4&&s.mixture<0.78,'mixture'],
   ['AVIONICS MASTER','ON', s=>s.avionics,'avionics'],
   ['LIGHTS','TAXI LIGHTS ON', s=>s.land,'land']
 ]},
@@ -141,15 +142,22 @@ const FLOWS = [
   ['MIXTURE','SET FULL RICH', s=>s.mixture>0.93,'mixture'],
   ['OIL TEMP','GREEN', s=>s.oilT>=100],
   ['THROTTLE','1,700 RPM', s=>near(s.rpm,1700,90),'throttle'],
-  ['MIXTURE',"LEAN (>3,000' MSL)"],
-  ['MAG CHECK','150 MAX / 50 DIFF', s=>s.magSeenL&&s.magSeenR&&s.mags==='BOTH','mags'],
+  // Conditional: below 3,000' there is nothing to do, so it arrives already
+  // satisfied and you call "below 3,000, not required" and confirm.
+  ['MIXTURE',"LEAN (>3,000' MSL)", s=>s.altFt<3000||s.mixture<0.9,'mixture'],
+  // The mag check as a flow, following the key: BOTH -> L -> BOTH -> R -> BOTH
+  ['LEFT MAG','CHECK \u2014 150 MAX DROP', s=>s.magSeenL,'mags'],
+  ['BOTH','RESTORE \u2014 NOTE DROP', s=>s.magSeenL&&s.mags==='BOTH','mags'],
+  ['RIGHT MAG','CHECK \u2014 150 MAX DROP', s=>s.magSeenR,'mags'],
+  ['BOTH','RESTORE \u2014 NOTE DROP', s=>s.magSeenR&&s.mags==='BOTH','mags'],
+  ['MAG DROP','150 MAX / 50 MAX DIFF', s=>s.magSeenL&&s.magSeenR&&s.mags==='BOTH','mags'],
   ["ENGINE T's & P's",'CK', s=>s.oilP>=60&&s.oilT>=100],
   ['CARB HEAT','ON', s=>s.carb,'carbheat'],
   ['THROTTLE','IDLE', s=>s.throttle<0.06,'throttle'],
   ['CARB HEAT','OFF', s=>!s.carb,'carbheat'],
   ['THROTTLE','1,000 RPM', s=>near(s.rpm,1000,140),'throttle'],
   ['FUEL SELECTOR','BOTH (SINGLE >5,000 FT)', s=>s.fuel==='BOTH','fuel'],
-  ['FLAPS','SET A/R (10° SHORT/SOFT FIELD)', s=>s.flaps===0||s.flaps===10,'flaps'],
+  ['FLAPS','SET 10° (SHORT/SOFT FIELD)', s=>s.flaps===10,'flaps'],
   ['LIGHTS','SET A/R', s=>s.land||s.strobe,'land'],
   ['SPOT TRACKER','CHECK'],
   ['DEPARTURE BRIEF','REVIEW']
@@ -158,11 +166,14 @@ const FLOWS = [
 {id:'cleared', name:'Cleared for Takeoff',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:0.18,
         running:true,rpm:1000,oilP:70,oilT:175,beacon:true,flaps:0,
-        airborne:false,altFt:1200,ias:0,hdg:270,xpdr:'ALT'},
+        airborne:false,altFt:1200,ias:0,hdg:270,xpdr:'SBY'},
  items:[
   ['SEATS','SECURE'],
+  ['HEADING','CONFIRMED WITH RWY'],
   ['LIGHTS AND STROBES','ON', s=>s.land&&s.strobe,'strobe'],
-  ['POWER QUADRANT','CHECKED']
+  ['TRANSPONDER','ALT', s=>s.xpdr==='ALT','xpdr'],
+  ['POWER QUADRANT','CHECKED'],
+  ['TIME','NOTE']
 ]},
 
 {id:'after-takeoff', name:'After Takeoff',
@@ -216,6 +227,26 @@ const FLOWS = [
   ['APPROACH BRIEF','COMPLETE']
 ]},
 
+{id:'pattern', name:'Traffic Pattern',
+ scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:1,throttle:1,
+        running:true,rpm:2500,oilP:74,oilT:188,beacon:true,strobe:true,land:true,
+        flaps:0,carb:false,airborne:true,ias:80,altFt:1400,vsi:700,hdg:270,pitch:8,xpdr:'ALT'},
+ items:[
+  ['CLIMB','80 MPH', s=>near(s.ias,80,15)],
+  ['LEVEL','ACCELERATE 90\u2013100 MPH', s=>s.ias>=88],
+  ['THROTTLE','2,200 RPM', s=>near(s.rpm,2200,120),'throttle'],
+  ['DOWNWIND','HT, HDG, SPEED, SPACING'],
+  ['ABEAM NUMBERS','THROTTLE 1,700 RPM', s=>near(s.rpm,1700,120),'throttle'],
+  ['CARB HEAT','ON', s=>s.carb,'carbheat'],
+  ['AIRSPEED','<100 MPH \u2014 FLAP 10\u00b0', s=>s.flaps===10,'flaps'],
+  ['AIRSPEED','80 MPH', s=>near(s.ias,80,14)],
+  ['THROTTLE','1,500 RPM', s=>near(s.rpm,1500,120),'throttle'],
+  ['BASE TURN','FLAP 20\u00b0', s=>s.flaps===20,'flaps'],
+  ['FINAL','FLAP 30\u00b0', s=>s.flaps===30,'flaps'],
+  ['FINAL CHECKS',"CCC \u2014 CARB HEAT, CLEARED, CONFIGURED"],
+  ['AIRSPEED','75/70 MPH \u2014 70/65 MPH SHORT']
+]},
+
 {id:'before-landing', name:'Before Landing',
  scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'LEFT',mixture:0.7,throttle:0.4,
         running:true,rpm:1800,oilP:70,oilT:186,beacon:true,strobe:true,flaps:0,
@@ -223,7 +254,9 @@ const FLOWS = [
  items:[
   ['GAS, UNDERCARRIAGE','BOTH TANKS, CHECKED', s=>s.fuel==='BOTH','fuel'],
   ['MIXTURE, PROP, FLAPS',"FULL RICH <3,000' MSL, FLAP 30°", s=>s.mixture>0.93&&s.flaps>=20,'mixture'],
-  ['LIGHTS','AS REQUIRED', s=>s.land,'land']
+  ['LIGHTS','AS REQUIRED', s=>s.land,'land'],
+  ['GUMS CHECK','GAS, UNDERCARRIAGE, MIXTURE, SWITCHES'],
+  ['FINAL VERIFICATION',"3 C's \u2014 CONFIGURED, CLEARED, RUNWAY CLEAR"]
 ]},
 
 {id:'after-landing', name:'After Landing',
@@ -233,14 +266,18 @@ const FLOWS = [
  items:[
   ['FLAPS, CARB HEAT','UP, OFF', s=>s.flaps===0&&!s.carb,'flaps'],
   ['LIGHTS, STROBES','OFF', s=>!s.land&&!s.strobe,'strobe'],
-  ['SQUAWK','VFR 1200']
+  ['SQUAWK','VFR 1200'],
+  ['TRANSPONDER','STBY', s=>s.xpdr==='SBY','xpdr'],
+  ['MIXTURE','GROUND LEAN', s=>s.mixture>0.4&&s.mixture<0.78,'mixture']
 ]},
 
 {id:'shutdown', name:'Shutdown',
- scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:0.6,throttle:0.2,
-        running:true,rpm:1100,oilP:68,oilT:182,beacon:true,strobe:true,flaps:0,
+ scene:{bat:true,alt:true,avionics:true,mags:'BOTH',fuel:'BOTH',mixture:0.6,throttle:0.35,
+        running:true,rpm:1265,oilP:68,oilT:182,beacon:true,strobe:true,flaps:0,
         airborne:false,ias:0,altFt:1200,xpdr:'SBY'},
  items:[
+  ['BRAKES','SET'],
+  ['THROTTLE','1,000 RPM', s=>near(s.rpm,1000,140),'throttle'],
   ['AVIONICS MASTER','OFF', s=>!s.avionics,'avionics'],
   ['ELECTRICAL SWITCHES','OFF, BEACON LEFT ON', s=>s.beacon&&lightsOff(s),'beacon'],
   ['MIXTURE','IDLE CUTOFF', s=>s.mixture<0.06,'mixture'],
